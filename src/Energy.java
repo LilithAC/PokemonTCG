@@ -1,4 +1,4 @@
-public class Energy extends PkmnCard {
+abstract class Energy extends PkmnCard {
 
     private String type;
 

@@ -4,10 +4,10 @@ public class Leafeon extends Pokemon {
 
     private int hp;
     private String type;
-    private ArrayList<Energy> energy;
+    private ArrayList<Energy> energyRes;
 
     public Leafeon() {
-        energy = new ArrayList<>();
+        energyRes = new ArrayList<>();
         hp = 90;
         type = "Grass";
     }

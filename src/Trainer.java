@@ -1,2 +1,2 @@
-public class Trainer extends PkmnCard {
+abstract class Trainer extends PkmnCard {
 }
