@@ -1,12 +1,12 @@
 import static java.util.Collections.shuffle;
 
-public class PkmnGame {
+public class PkmnGameLoop {
 
     public Player player1;
     private Player player2;
 
     //constructs pokemon game with two players and decides turn order
-    public PkmnGame(Player player1, Player player2) {
+    public PkmnGameLoop(Player player1, Player player2) {
 
         Coin coin = new Coin();
         if (coin.flip()) {
