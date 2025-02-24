@@ -22,7 +22,7 @@ public class PkmnTesting {
         Player player1 = new Player(deck1);
         Player player2 = new Player(deck2);
 
-        PkmnGameLoop test = new PkmnGameLoop(player1, player2);
+        PkmnGame test = new PkmnGame(player1, player2);
         test.startGame();
 
         // ===== THIRD CHECKUP =====

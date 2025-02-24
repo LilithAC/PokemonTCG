@@ -41,7 +41,7 @@ public class MulliganStats {
             Player player1 = new Player(deck1);
             Player player2 = new Player(deck2);
 
-            PkmnGameLoop test = new PkmnGameLoop(player1, player2);
+            PkmnGame test = new PkmnGame(player1, player2);
             test.startGame();
             if (!test.player1.containsPkmn()) {
                 count++;
@@ -92,7 +92,7 @@ public class MulliganStats {
 
             //creates a new game and starts until player1 draws a hand with at least 1 pkmn
             do {
-                PkmnGameLoop test = new PkmnGameLoop(player1, player2);
+                PkmnGame test = new PkmnGame(player1, player2);
                 test.stopGame();
                 test.startGame();
             } while (!player1.containsPkmn());

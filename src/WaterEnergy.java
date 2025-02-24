@@ -14,4 +14,9 @@ public class WaterEnergy extends Energy {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "Water Energy";
+    }
 }

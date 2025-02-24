@@ -1,12 +1,12 @@
 import static java.util.Collections.shuffle;
 
-public class PkmnGameLoop {
+public class PkmnGame {
 
     public Player player1;
     private Player player2;
 
     //constructs pokemon game with two players and decides turn order
-    public PkmnGameLoop(Player player1, Player player2) {
+    public PkmnGame(Player player1, Player player2) {
 
         Coin coin = new Coin();
         if (coin.flip()) {
@@ -73,11 +73,9 @@ public class PkmnGameLoop {
 
     public void takeTurn(Player player) {
         drawCard(player);
-        attachEnergy(player);
-        playPkmn(player);
     }
 
-    //needs to add a PkmnCard to hand and remove it from deck
+    //adds a PkmnCard to hand and remove it from deck
     public void drawCard(Player player) {
         player.addHand(player.getDeck().getFirst());
         player.getDeck().removeFirst();
@@ -85,28 +83,20 @@ public class PkmnGameLoop {
 
     //populates hand with 7 PkmnCards
     public void fillHand(Player player) {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             drawCard(player);
         }
     }
 
     //populates prize pile with 6 PkmnCards
     public void fillPrize(Player player) {
-        for(int i = 0; i < 7; i++) {
+        for(int i = 0; i < 6; i++) {
             player.getPrizePile().add(player.getDeck().get(i));
             player.getDeck().remove(i);
         }
     }
 
     //TO DO:
-
-    public void attachEnergy(Player player) {
-       // player.attachEnergy();
-    }
-
-    public void playPkmn(Player player){
-        //player.playPkmn();
-    }
 
     private void mulligan(Player player) {
 
