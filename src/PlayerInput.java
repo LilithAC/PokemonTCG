@@ -22,9 +22,6 @@ public class PlayerInput {
             } catch (InputMismatchException e) {
 
             }
-
-
-
         }
     }
 

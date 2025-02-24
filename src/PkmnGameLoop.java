@@ -59,15 +59,22 @@ public class PkmnGameLoop {
         player2.getPrizePile().clear();
     }
 
+    /**needs to check if any conditions are true:
+     * player has 0 pokemon in play
+     * player's deck is empty
+    **/
     public boolean checkLoser(Player player) {
-        return player.getDeck().isEmpty() || player.getPrizePile().isEmpty() || player.getBench().isEmpty() || player.getActive() == null;
+        return player.getDeck().isEmpty() || (player.getBench().isEmpty() && player.getActive() == null);
+    }
+
+    public boolean checkWin(Player player) {
+        return player.getPrizePile().isEmpty();
     }
 
     public void takeTurn(Player player) {
         drawCard(player);
-        attachEnergy();
-        playPkmn();
-
+        attachEnergy(player);
+        playPkmn(player);
     }
 
     //needs to add a PkmnCard to hand and remove it from deck
@@ -78,7 +85,7 @@ public class PkmnGameLoop {
 
     //populates hand with 7 PkmnCards
     public void fillHand(Player player) {
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 6; i++) {
             drawCard(player);
         }
     }
@@ -89,6 +96,16 @@ public class PkmnGameLoop {
             player.getPrizePile().add(player.getDeck().get(i));
             player.getDeck().remove(i);
         }
+    }
+
+    //TO DO:
+
+    public void attachEnergy(Player player) {
+       // player.attachEnergy();
+    }
+
+    public void playPkmn(Player player){
+        //player.playPkmn();
     }
 
     private void mulligan(Player player) {

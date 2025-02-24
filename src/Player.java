@@ -29,6 +29,25 @@ public class Player {
 
         return pkmn != 0;
     }
+    //TO DO:
+    //needs to check if player has already played an energy card this turn
+    public void attachEnergy(Pokemon poke, Energy energy) {
+        int energyPos = hand.indexOf(energy);
+        poke.getEnergyRes().add(energy);
+        hand.remove(energyPos);
+    }
+
+    public void playPkmnActive(Pokemon poke) {
+        Object o = hand.get(hand.indexOf(poke));
+        Pokemon newActive = (Pokemon) o;
+        active = newActive;
+    }
+
+    public void playPkmnBench(Pokemon poke) {
+        Object o = hand.get(hand.indexOf(poke));
+        Pokemon toBench = (Pokemon) o;
+        bench.add(toBench);
+    }
 
     public ArrayList<PkmnCard> getDeck() {
         return deck;

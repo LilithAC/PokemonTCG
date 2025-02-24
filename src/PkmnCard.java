@@ -1,3 +1,3 @@
-public class PkmnCard {
+abstract public class PkmnCard {
 
 }
