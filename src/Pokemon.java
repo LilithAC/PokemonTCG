@@ -1,3 +1,4 @@
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 abstract class Pokemon extends PkmnCard {
@@ -5,6 +6,7 @@ abstract class Pokemon extends PkmnCard {
     private int hp;
     private String type;
     private ArrayList<Energy> energyRes;
+    private ArrayList<String> moveSet;
 
     public Pokemon() {
 
@@ -45,4 +47,6 @@ abstract class Pokemon extends PkmnCard {
     public ArrayList<Energy> getEnergyRes() {
         return energyRes;
     }
+
+    public ArrayList<String> getMoveSet() { return moveSet;}
 }

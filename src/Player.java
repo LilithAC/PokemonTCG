@@ -10,6 +10,7 @@ public class Player {
     private ArrayList<PkmnCard> discard;
     private ArrayList<Pokemon> bench;
     private Pokemon active;
+    private int energyCounter;
 
     public Player(ArrayList<PkmnCard> deck) {
         this.deck = deck;
@@ -29,12 +30,12 @@ public class Player {
 
         return pkmn != 0;
     }
-    //TO DO:
-    //needs to check if player has already played an energy card this turn
+
     public void attachEnergy(Pokemon poke, Energy energy) {
         int energyPos = hand.indexOf(energy);
         poke.getEnergyRes().add(energy);
         hand.remove(energyPos);
+        energyCounter++;
     }
 
     public void playPkmnActive(Pokemon poke) {
@@ -88,6 +89,8 @@ public class Player {
     public void setActive(Pokemon active) {
         this.active = active;
     }
+
+    public int getEnergyCounter() { return energyCounter; }
 
     //functional programming :3
     public boolean checkPrize(int candies) {

@@ -5,9 +5,15 @@ public class Leafeon extends Pokemon {
     private int hp;
     private String type;
     private ArrayList<Energy> energyRes;
+    private ArrayList<String> moveSet;
+
+
 
     public Leafeon() {
         energyRes = new ArrayList<>();
+        moveSet = new ArrayList<>();
+        moveSet.add("Spiral Drain");
+        moveSet.add("Magical Leaf");
         hp = 90;
         type = "Grass";
     }
