@@ -244,23 +244,40 @@ public abstract class PlayerInput {
     //then end player's turn AND reset energy counter to 0 !!!
     //if there is no active pokemon throw error
     public static void printAttackMenu() {
-        throw new RuntimeException(ERROR_CUTE);
-        /**
         System.out.println("Please choose an attack");
+        int i = 1;
         for (String move : player.getActive().getMoveSet()) {
-            int i = 1;
-            System.out.println(i + move);
+            System.out.println(i + " - " + move);
             i++;
         }
-         **/
 
+        int choice = PlayerInput.getInput();
+        try {
+            player.getActive().getMoveSet().get(choice);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(String.format(ERROR_NUM, choice));
+        }
     }
 
     //TO DO:
     //should ask player if they are sure they would not like to attack
     //end players turn AND reset energy counter to 0 !!!
     public static void printPassMenu() {
-        throw new RuntimeException(ERROR_CUTE);
+        System.out.println("End your turn without attacking?");
+        System.out.println("1 - Yes");
+        System.out.println("2 - No");
+
+        int choice = PlayerInput.getInput();
+
+        switch (choice) {
+            case 1:
+                throw new RuntimeException(ERROR_CUTE);
+            case 2:
+                printGameMenu();
+                break;
+            default:
+                System.out.println("how did you get here");
+        }
     }
 
     //only checks if player input was an integer, NOT if it was a valid choice
