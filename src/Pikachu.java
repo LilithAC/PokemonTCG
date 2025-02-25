@@ -2,14 +2,14 @@ import java.util.ArrayList;
 
 public class Pikachu extends Pokemon {
 
-    private int hp;
-    private String type;
-    private ArrayList<Energy> energy;
-
     public Pikachu() {
-        energy = new ArrayList<>();
+        energyRes = new ArrayList<>();
+        moveSet = new ArrayList<>();
+        moveSet.add("Scratch");
+        moveSet.add("Quick Attack");
         hp = 60;
         type = "Electric";
+        retreatCost = 1;
     }
 
     public void scratch(Pokemon poke) {
@@ -29,4 +29,8 @@ public class Pikachu extends Pokemon {
         } else { System.out.println("Not enough energy."); }
     }
 
+    @Override
+    public String toString() {
+        return "Pikachu";
+    }
 }

@@ -3,14 +3,11 @@ import java.util.ArrayList;
 
 abstract class Pokemon extends PkmnCard {
 
-    private int hp;
-    private String type;
-    private ArrayList<Energy> energyRes;
-    private ArrayList<String> moveSet;
-
-    public Pokemon() {
-
-    }
+    protected int hp;
+    protected int retreatCost;
+    protected String type;
+    protected ArrayList<Energy> energyRes;
+    protected ArrayList<String> moveSet;
 
     public int getHp() {
         return hp;

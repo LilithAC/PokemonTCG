@@ -7,7 +7,7 @@ public abstract class PlayerInput {
     private static Player player;
     private static PkmnGame game;
     private static Scanner in = new Scanner(System.in);
-    private static final String ERROR = "Invalid choice: %s. Must be a number.";
+    private static final String ERROR_FRMT = "Invalid choice: %s. Must be a number.";
     private static final String ERROR_NUM = "Invalid choice: %s. Must be a number listed.";
     private static final String ERROR_CUTE = "Not implemented yet :3";
 
@@ -52,7 +52,7 @@ public abstract class PlayerInput {
         Pikachu pikachu = new Pikachu();
         ArrayList<PkmnCard> deck1 = new ArrayList<>();
         for (int i = 0; i < 60; i++) {
-            deck1.add(waterEnergy);
+            deck1.add(pikachu);
         }
         ArrayList<PkmnCard> deck2 = new ArrayList<>();
         for (int i = 0; i < 60; i++) {
@@ -72,7 +72,6 @@ public abstract class PlayerInput {
     //make opponent configurable to be AI or human ran
     public static void options() {
         System.out.println("----- OPTIONS -----");
-
     }
 
     public static void endGame() {
@@ -91,7 +90,7 @@ public abstract class PlayerInput {
 
         var choice = PlayerInput.getInput();
 
-        while (!List.of(1, 2 ,3, 4).contains(choice)) {
+        while (!List.of(1, 2 ,3, 4, 5).contains(choice)) {
             System.out.println(String.format(ERROR_NUM, choice));
 
             printGameMenu();
@@ -115,17 +114,12 @@ public abstract class PlayerInput {
                 printPassMenu();
                 break;
             default:
-                throw new IllegalArgumentException(String.format(ERROR_NUM, choice));
+                throw new RuntimeException("how did you get here?");
         }
     }
 
 
-    //TO DO:
-    //should print out player's entire hand with number options from each
-    //when player chooses a number, program should act according to card type
-    //Trainer cards should be used and discarded
-    //Monster cards should be benched
-    //Energy cards should be attempted to be attached --> leads to energy subMenu
+
     public static void printHandMenu() {
         System.out.println("----- YOUR HAND -----");
         printHand();
@@ -135,10 +129,10 @@ public abstract class PlayerInput {
 
         switch (type) {
             case "Pokemon" :
-                printPlayPKMNMenu();
+                printPlayPKMNMenu((Pokemon) player.getHand().get(choice));
                 break;
             case "Trainer" :
-                printPlayTrainerMenu();
+                printPlayTrainerMenu((Trainer) player.getHand().get(choice));
                 break;
             case "Energy" :
                 printEnergyMenu((Energy) player.getHand().get(choice));
@@ -148,18 +142,28 @@ public abstract class PlayerInput {
         }
     }
 
-    public static void printPlayPKMNMenu() {
-        throw new RuntimeException(ERROR_CUTE);
+
+    //takes pokemon from hand, plays it to bench, automatically puts pkmn as active if empty
+    public static void printPlayPKMNMenu(Pokemon pokemon) {
+        if (player.getActive() == null) {
+            System.out.println("First Pokemon must go to active slot.");
+            player.getHand().remove(pokemon); //i hope this doesnt do anything unexpected
+            player.setActive(pokemon);
+            printGameMenu();
+        } else {
+            System.out.println("Pokemon sent to bench");
+            player.getHand().remove(pokemon);
+            player.getBench().add(pokemon);
+            printGameMenu();
+        }
     }
 
     //TO DO:
     //displays trainer card description and let player decide to play
-    public static void printPlayTrainerMenu() {
+    public static void printPlayTrainerMenu(Trainer trainer) {
         throw new RuntimeException(ERROR_CUTE);
     }
-
-    //for each card in the players hand,
-    //a number should be printed that corresponds to that card
+    
     public static void printHand() {
         int i = 1;
         for (PkmnCard card : player.getHand()) {
@@ -168,47 +172,64 @@ public abstract class PlayerInput {
         }
     }
 
-    //needs to print both players active pkmn HP and benched pkmn
+    //needs to print both players active pkmn HP and benched pkmn w/ HP
     public static void printGameState() {
-        System.out.println("----- YOUR PKMN -----");
-        System.out.println("Active PKMN: " + player.getActive().toString() + "HP: " + player.getActive().getHp());
-        System.out.println("Benched PKMN: ");
-        for (Pokemon pkmn : player.getBench()) {
-            System.out.println(pkmn + "HP: " + pkmn.getHp());
-        }
-        System.out.println("----- OPPONENTS PKMN");
 
+        System.out.println("----- YOUR PKMN -----");
+        //check if theres an active pkmn first
+        if (player.getActive() == null) {
+            System.out.println("Active PKMN: None");
+        } else {
+            System.out.println("Active PKMN: ");
+            System.out.println(player.getActive().toString() + " HP: " + player.getActive().getHp());
+        }
+
+        System.out.println("Benched PKMN: ");
+        //check if bench is empty first
+        if (player.getBench().isEmpty()) {
+            System.out.println("None");
+        } else {
+            for (Pokemon pkmn : player.getBench()) {
+                System.out.println(pkmn + " HP: " + pkmn.getHp());
+            }
+        }
+        System.out.println("----- OPPONENTS PKMN -----");
+        System.out.println("we didnt get that far");
+
+        printGameMenu();
     }
 
-    //TO DO:
-    //first check if player has already played an energy
-    //player should select a pkmn from array of benched + active pkmn
+
     public static void printEnergyMenu(Energy energy) {
         if (player.getEnergyCounter() > 0) {
             System.out.println("You have already played an energy this turn.");
+            printGameMenu();
+        } else if (player.getBench().isEmpty() && player.getActive() == null) {
+            System.out.println("You have no Pokemon to attach energy to.");
+            printGameMenu();
+        } else {
+            ArrayList<Pokemon> choices = new ArrayList<>();
+            choices.addAll(player.getBench());
+            choices.add(player.getActive());
+
+            System.out.println("Please select a Pokemon to attach energy to: ");
+            int i = 1;
+            for (Pokemon pkmn : choices) {
+                System.out.print(i + " - " + pkmn.toString());
+                i++;
+            }
+
+            int choice = PlayerInput.getInput();
+            //check if choice is OOB
+            try {
+                choices.get(choice);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Not valid option. Must be a number listed on screen");
+            }
+
+            player.attachEnergy(choices.get(choice), energy);
+            printGameMenu();
         }
-
-        ArrayList<Pokemon> choices = new ArrayList<>();
-        choices.addAll(player.getBench());
-        choices.add(player.getActive());
-
-        System.out.println("Please select a Pokemon to attach energy to: ");
-        int i = 1;
-        for (Pokemon pkmn : choices) {
-            System.out.print(i + " - " + pkmn.toString());
-            i++;
-        }
-
-        int choice = PlayerInput.getInput();
-
-        //needs to check that choice was in array bounds
-        try {
-            choices.get(choice);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Not valid option. Must be number listed on screen");
-        }
-
-        player.attachEnergy(choices.get(choice), energy);
     }
 
     //TO DO:
@@ -239,7 +260,7 @@ public abstract class PlayerInput {
     //should ask player if they are sure they would not like to attack
     //end players turn AND reset energy counter to 0 !!!
     public static void printPassMenu() {
-        throw new RuntimeException("Not implemented yet :3");
+        throw new RuntimeException(ERROR_CUTE);
     }
 
     //only checks if player input was an integer, NOT if it was a valid choice
@@ -252,7 +273,7 @@ public abstract class PlayerInput {
                 choice = Integer.parseInt(next);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println(String.format(ERROR, next));
+                System.out.println(String.format(ERROR_FRMT, next));
             }
 
             printMainMenu();

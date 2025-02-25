@@ -2,13 +2,6 @@ import java.util.ArrayList;
 
 public class Leafeon extends Pokemon {
 
-    private int hp;
-    private String type;
-    private ArrayList<Energy> energyRes;
-    private ArrayList<String> moveSet;
-
-
-
     public Leafeon() {
         energyRes = new ArrayList<>();
         moveSet = new ArrayList<>();
@@ -16,6 +9,7 @@ public class Leafeon extends Pokemon {
         moveSet.add("Magical Leaf");
         hp = 90;
         type = "Grass";
+        retreatCost = 2;
     }
 
     public void spiralDrain(Pokemon poke) {
@@ -40,4 +34,8 @@ public class Leafeon extends Pokemon {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Leafeon";
+    }
 }
