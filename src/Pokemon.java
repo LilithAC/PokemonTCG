@@ -46,4 +46,5 @@ abstract class Pokemon extends PkmnCard {
     }
 
     public ArrayList<String> getMoveSet() { return moveSet;}
+
 }

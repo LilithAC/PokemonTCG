@@ -11,7 +11,9 @@ public abstract class PlayerInput {
     private static final String ERROR_NUM = "Invalid choice: %s. Must be a number listed.";
     private static final String ERROR_CUTE = "Not implemented yet :3";
 
-    public static void main(String[] args) {
+    //TO DO:
+    //this should be in the game loop class, not here
+    public void runGame() {
         printMainMenu();
         var choice = PlayerInput.getInput();
 
@@ -43,7 +45,6 @@ public abstract class PlayerInput {
     }
 
     //TO DO:
-    //needs to initialize 2 players with decks and start a game with them
     //coin flip should decide turn order
     public static void startGame() {
         System.out.println("Starting game...");
@@ -99,13 +100,22 @@ public abstract class PlayerInput {
 
         switch (choice) {
             case 1:
-                printHandMenu();
-                break;
+                if (player.getHand().size() == 0) {
+
+                } else {
+                    printHandMenu();
+                    break;
+                }
             case 2:
-                printRetreatMenu();
-                break;
+                if (player.getActive() == null) {
+                    System.out.println("You have no active Pokemon to retreat.");
+                    printGameMenu();
+                } else {
+                    printRetreatMenu();
+                    break;
+                }
             case 3:
-                printAttackMenu();
+                printAttackMenu(player.getActive());
                 break;
             case 4:
                 printGameState();
@@ -236,26 +246,54 @@ public abstract class PlayerInput {
     //should take active pkmn and send it to bench using energy attached to pkmn
     //then player chooses new active pokemon from bench
     public static void printRetreatMenu() {
-        throw new RuntimeException(ERROR_CUTE);
+        System.out.println("Would you like to retreat?" + player.getActive().toString() + "'s retreat cost is " + player.getActive().retreatCost);
+        System.out.println("1 - Yes");
+        System.out.println("2 - No");
+
+        int choice = PlayerInput.getInput();
+
+        switch (choice) {
+            case 1:
+                if (player.getActive().getEnergyRes().size() < player.getActive().retreatCost) {
+                    System.out.println("Not enough energy. " + player.getActive().toString() + "'s has " + player.getActive().getEnergyRes().size() + " energy attached.");
+                    printGameMenu();
+                } else {
+                    for (int i = 0; i < player.getActive().retreatCost; i++) {
+                        player.getActive().getEnergyRes().removeFirst();
+                    }
+                }
+            case 2:
+                printGameMenu();
+                break;
+            default:
+                System.out.println("how did you get here");
+        }
     }
 
     //TO DO:
     //needs to have player choose PKMN to attack, then choose a move to use
-    //then end player's turn AND reset energy counter to 0 !!!
+    //then end player's turn AND reset energy counter to 0
     //if there is no active pokemon throw error
-    public static void printAttackMenu() {
-        System.out.println("Please choose an attack");
-        int i = 1;
-        for (String move : player.getActive().getMoveSet()) {
-            System.out.println(i + " - " + move);
-            i++;
-        }
+    public static void printAttackMenu(Pokemon pokemon) {
+        if (player.getActive() == null) {
+            System.out.println("You have no active Pokemon to attack with.");
+            printGameMenu();
+        } else {
+            System.out.println("Please choose an attack: ");
 
-        int choice = PlayerInput.getInput();
-        try {
-            player.getActive().getMoveSet().get(choice);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println(String.format(ERROR_NUM, choice));
+            int i = 1;
+            for (String move : pokemon.getMoveSet()) {
+                System.out.println(i + " - " + move);
+                i++;
+            }
+
+            int choice = PlayerInput.getInput();
+            try {
+                pokemon.getMoveSet().get(choice);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println(String.format(ERROR_NUM, choice));
+                printAttackMenu(pokemon);
+            }
         }
     }
 
@@ -271,6 +309,7 @@ public abstract class PlayerInput {
 
         switch (choice) {
             case 1:
+                player.setEnergyCounter(0);
                 throw new RuntimeException(ERROR_CUTE);
             case 2:
                 printGameMenu();

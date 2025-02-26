@@ -58,10 +58,6 @@ public class Player {
         return hand;
     }
 
-    public void setHand(ArrayList<PkmnCard> hand) {
-        this.hand = hand;
-    }
-
     public void addHand(PkmnCard card) {
         this.hand.add(card);
     }
@@ -78,10 +74,6 @@ public class Player {
         return bench;
     }
 
-    public void addBench(Pokemon poke) {
-        bench.add(poke);
-    }
-
     public Pokemon getActive() {
         return active;
     }
@@ -91,6 +83,8 @@ public class Player {
     }
 
     public int getEnergyCounter() { return energyCounter; }
+
+    public void setEnergyCounter(int energyCounter) { this.energyCounter = energyCounter; }
 
     //functional programming :3
     public boolean checkPrize(int candies) {

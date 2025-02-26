@@ -52,11 +52,17 @@ public class PkmnGame {
         player1.getDeck().addAll(player1.getPrizePile());
         player1.getPrizePile().clear();
 
+        player1.getDeck().addAll(player1.getDiscard());
+        player1.getDiscard().clear();
+
         player2.getDeck().addAll(player2.getHand());
         player2.getHand().clear();
 
         player2.getDeck().addAll(player2.getPrizePile());
         player2.getPrizePile().clear();
+
+        player2.getDeck().addAll(player2.getDiscard());
+        player2.getDiscard().clear();
     }
 
     /**needs to check if any conditions are true:

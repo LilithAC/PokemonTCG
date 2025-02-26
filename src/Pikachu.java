@@ -12,21 +12,30 @@ public class Pikachu extends Pokemon {
         retreatCost = 1;
     }
 
-    public void scratch(Pokemon poke) {
+    public boolean scratch(Pokemon poke) {
         if (energyCheck() > 0) {
             poke.takeDamage(20);
+            return true;
         } else {
             System.out.println("Not enough energy.");
+            return false;
         }
     }
 
-    public void quickAttack(Pokemon poke) {
+    public boolean quickAttack(Pokemon poke) {
         if (energyCheck() > 1 && energyCheckType("Electric") > 0) {
             Coin coin = new Coin();
             if (coin.flip()) {
                 poke.takeDamage(30);
-            } else { poke.takeDamage(20); }
-        } else { System.out.println("Not enough energy."); }
+                return true;
+            } else {
+                poke.takeDamage(20);
+                return true;
+            }
+        } else {
+            System.out.println("Not enough energy.");
+            return false;
+        }
     }
 
     @Override
