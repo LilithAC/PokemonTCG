@@ -2,35 +2,29 @@ import java.util.ArrayList;
 
 public class Leafeon extends Pokemon {
 
+    //nbnnhmkgvfgfgfghgnvvvcvb vvfgnjhbbbhn mnngbbbmnhnnbuh <-- yuki written code
     public Leafeon() {
         energyRes = new ArrayList<>();
         moveSet = new ArrayList<>();
 
+        Attack spiralDrain = new Attack("Spiral Drain", 40, 40);
+        EnergyCost sd1 = new EnergyCost(EnergyType.ANY, 2);
+        EnergyCost sd2 = new EnergyCost(EnergyType.GRASS, 1);
+        spiralDrain.energyCosts.add(sd1);
+        spiralDrain.energyCosts.add(sd2);
+
+        Attack magicalLeaf = new Attack("Magical Leaf", 50, 80);
+        EnergyCost ml1 = new EnergyCost(EnergyType.ANY, 3);
+        EnergyCost ml2 = new EnergyCost(EnergyType.GRASS, 1);
+        magicalLeaf.energyCosts.add(ml1);
+        magicalLeaf.energyCosts.add(ml2);
+
+        moveSet.add(spiralDrain);
+        moveSet.add(magicalLeaf);
+
         hp = 90;
-        type = "Grass";
+        type = EnergyType.GRASS;
         retreatCost = 2;
-    }
-
-    public void spiralDrain(Pokemon poke) {
-        if (energyCheck() > 1 && energyCheckType("Grass") > 0) {
-            poke.takeDamage(40);
-            hp = hp + 30;
-        } else {
-            System.out.println("Not enough energy.");
-        }
-    }
-
-    public void magicalLeaf(Pokemon poke) {
-        if (energyCheck() > 2 && energyCheckType("Grass") > 0) {
-            Coin coin = new Coin();
-            if (coin.flip()) {
-                poke.takeDamage(80);
-            } else {
-                poke.takeDamage(50);
-            }
-        } else {
-            System.out.println("Not enough energy.");
-        }
     }
 
     @Override

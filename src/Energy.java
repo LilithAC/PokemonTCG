@@ -1,12 +1,12 @@
 abstract class Energy extends PkmnCard {
 
-    private String type;
+    protected EnergyType type;
 
     public Energy() {
 
     }
 
-    public String getType() {
+    public EnergyType getType() {
         return type;
     }
 }

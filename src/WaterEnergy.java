@@ -1,17 +1,17 @@
 public class WaterEnergy extends Energy {
 
-    private String type;
+    private EnergyType type;
     private Pokemon attached;
 
     public WaterEnergy() {
-        type = "Water";
+        type = EnergyType.WATER;
     }
 
     public void setAttached(Pokemon poke) {
         attached = poke;
     }
 
-    public String getType() {
+    public EnergyType getType() {
         return type;
     }
 

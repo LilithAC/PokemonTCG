@@ -5,9 +5,9 @@ abstract class Pokemon extends PkmnCard {
 
     protected int hp;
     protected int retreatCost;
-    protected String type;
+    protected EnergyType type;
     protected ArrayList<Energy> energyRes;
-    protected ArrayList<String> moveSet;
+    protected ArrayList<Attack> moveSet;
 
     public int getHp() {
         return hp;
@@ -17,7 +17,7 @@ abstract class Pokemon extends PkmnCard {
         hp = hp - dmg;
     }
 
-    public String getType() {
+    public EnergyType getType() {
         return type;
     }
 
@@ -31,7 +31,7 @@ abstract class Pokemon extends PkmnCard {
     }
 
     //counts how many energy cards of a specified type are attached
-    public int energyCheckType(String type) {
+    public int energyCheckType(EnergyType type) {
         int count = 0;
         for (Energy card : energyRes) {
             if (card.getType() == type) {
@@ -45,6 +45,6 @@ abstract class Pokemon extends PkmnCard {
         return energyRes;
     }
 
-    public ArrayList<String> getMoveSet() { return moveSet;}
+    public ArrayList<Attack> getMoveSet() { return moveSet;}
 
 }

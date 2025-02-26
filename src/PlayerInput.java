@@ -282,7 +282,7 @@ public abstract class PlayerInput {
             System.out.println("Please choose an attack: ");
 
             int i = 1;
-            for (String move : pokemon.getMoveSet()) {
+            for (Attack move : pokemon.getMoveSet()) {
                 System.out.println(i + " - " + move);
                 i++;
             }
