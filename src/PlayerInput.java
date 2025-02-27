@@ -5,6 +5,7 @@ import java.util.Scanner;
 public abstract class PlayerInput {
 
     private static Player player;
+    private static Player player2;
     private static PkmnGame game;
     private static Scanner in = new Scanner(System.in);
     private static final String ERROR_FRMT = "Invalid choice: %s. Must be a number.";
@@ -13,7 +14,7 @@ public abstract class PlayerInput {
 
     //TO DO:
     //this should be in the game loop class, not here
-    public void runGame() {
+    public static void runGame() {
         printMainMenu();
         var choice = PlayerInput.getInput();
 
@@ -60,11 +61,12 @@ public abstract class PlayerInput {
             deck2.add(waterEnergy);
         }
 
-        Player player1 = new Player(deck1);
-        Player player2 = new Player(deck2);
+        Player playerA = new Player(deck1);
+        Player playerB = new Player(deck2);
 
-        game = new PkmnGame(player1, player2);
-        player = player1;
+        game = new PkmnGame(playerA, playerB);
+        player = playerA;
+        player2 = playerB;
         game.startGame();
         printGameMenu();
     }
@@ -100,8 +102,8 @@ public abstract class PlayerInput {
 
         switch (choice) {
             case 1:
-                if (player.getHand().size() == 0) {
-
+                if (player.getHand().isEmpty()) {
+                    System.out.println("You have no cards to play.");
                 } else {
                     printHandMenu();
                     break;
@@ -115,7 +117,7 @@ public abstract class PlayerInput {
                     break;
                 }
             case 3:
-                printAttackMenu(player.getActive());
+                printAttackMenu(player.getActive(), player2.getActive());
                 break;
             case 4:
                 printGameState();
@@ -274,7 +276,7 @@ public abstract class PlayerInput {
     //needs to have player choose PKMN to attack, then choose a move to use
     //then end player's turn AND reset energy counter to 0
     //if there is no active pokemon throw error
-    public static void printAttackMenu(Pokemon pokemon) {
+    public static void printAttackMenu(Pokemon attackPokemon, Pokemon defendPokemon) {
         if (player.getActive() == null) {
             System.out.println("You have no active Pokemon to attack with.");
             printGameMenu();
@@ -282,18 +284,25 @@ public abstract class PlayerInput {
             System.out.println("Please choose an attack: ");
 
             int i = 1;
-            for (Attack move : pokemon.getMoveSet()) {
-                System.out.println(i + " - " + move);
+            for (Attack move : attackPokemon.getMoveSet()) {
+                System.out.println(i + " - " + move.name);
                 i++;
             }
 
             int choice = PlayerInput.getInput();
             try {
-                pokemon.getMoveSet().get(choice);
+                attackPokemon.getMoveSet().get(choice);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println(String.format(ERROR_NUM, choice));
-                printAttackMenu(pokemon);
+                printAttackMenu(attackPokemon, defendPokemon);
             }
+            if (attackPokemon.getMoveSet().get(choice).costs.isMet(attackPokemon)) {
+                defendPokemon.takeDamage(attackPokemon.getMoveSet().get(choice).dmg);
+            } else {
+                System.out.println("Not enough energy.");
+                printAttackMenu(attackPokemon, defendPokemon);
+            }
+
         }
     }
 

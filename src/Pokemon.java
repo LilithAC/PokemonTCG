@@ -8,6 +8,8 @@ abstract class Pokemon extends PkmnCard {
     protected EnergyType type;
     protected ArrayList<Energy> energyRes;
     protected ArrayList<Attack> moveSet;
+    protected AttackCost move1;
+    protected AttackCost move2;
 
     public int getHp() {
         return hp;

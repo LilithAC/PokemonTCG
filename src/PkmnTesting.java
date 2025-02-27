@@ -4,26 +4,7 @@ public class PkmnTesting {
 
     public static void main(String[] args) {
 
-        WaterEnergy waterEnergy = new WaterEnergy();
-        Pikachu pikachu = new Pikachu();
-
-
-        ArrayList<PkmnCard> deck1 = new ArrayList<>();
-        for (int i = 0; i < 59; i++) {
-            deck1.add(waterEnergy);
-        }
-        deck1.add(pikachu);
-
-        ArrayList<PkmnCard> deck2 = new ArrayList<>();
-        for (int i = 0; i < 60; i++) {
-            deck2.add(pikachu);
-        }
-        
-        Player player1 = new Player(deck1);
-        Player player2 = new Player(deck2);
-
-        PkmnGame test = new PkmnGame(player1, player2);
-        test.startGame();
+        PlayerInput.runGame();
 
         // ===== THIRD CHECKUP =====
         //1-4 different pokemon minimum
