@@ -47,6 +47,15 @@ abstract class Pokemon extends PkmnCard {
         return energyRes;
     }
 
+    public ArrayList<String> resToString() {
+        ArrayList<String> resF = new ArrayList<>();
+        for (Energy energy : energyRes) {
+            resF.add(energy.toString());
+        }
+
+        return resF;
+    }
+
     public ArrayList<Attack> getMoveSet() { return moveSet;}
 
 }

@@ -9,4 +9,5 @@ abstract class Energy extends PkmnCard {
     public EnergyType getType() {
         return type;
     }
+
 }

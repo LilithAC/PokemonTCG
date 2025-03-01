@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class Leafeon extends Pokemon {
 
-    //nbnnhmkgvfgfgfghgnvvvcvb vvfgnjhbbbhn mnngbbbmnhnnbuh <-- yuki written code
     public Leafeon() {
         energyRes = new ArrayList<>();
         moveSet = new ArrayList<>();

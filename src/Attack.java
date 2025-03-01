@@ -24,4 +24,12 @@ public class Attack {
 
         costs = new AttackCost(energyCosts);
     }
+
+    public ArrayList<String> costsToString() {
+        ArrayList<String> costsF = new ArrayList<>();
+        for (EnergyCost cost : energyCosts) {
+            costsF.add(cost.toString());
+        }
+        return costsF;
+    }
 }

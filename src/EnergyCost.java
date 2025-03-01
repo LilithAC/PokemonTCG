@@ -1,13 +1,5 @@
 import java.util.List;
 
-enum EnergyType {
-    FIRE,
-    GRASS,
-    WATER,
-    ELECTRIC,
-    ANY
-}
-
 class EnergyCost {
 
     protected  EnergyType type;
@@ -16,5 +8,9 @@ class EnergyCost {
     public EnergyCost(EnergyType type, int cost) {
         this.type = type;
         this.cost = cost;
+    }
+
+    public String toString() {
+        return (cost + " " + type + " energy");
     }
 }

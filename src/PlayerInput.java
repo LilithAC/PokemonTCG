@@ -23,15 +23,23 @@ public abstract class PlayerInput {
     public static void startGame() {
         System.out.println("Starting game...");
 
-        WaterEnergy waterEnergy = new WaterEnergy();
-        Pikachu pikachu = new Pikachu();
         ArrayList<PkmnCard> deck1 = new ArrayList<>();
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 30; i++) {
+            Pikachu pikachu = new Pikachu();
             deck1.add(pikachu);
         }
+        for (int i = 0; i < 30; i++) {
+            ElectricEnergy electricEnergy = new ElectricEnergy();
+            deck1.add(electricEnergy);
+        }
         ArrayList<PkmnCard> deck2 = new ArrayList<>();
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 30; i++) {
+            WaterEnergy waterEnergy = new WaterEnergy();
             deck2.add(waterEnergy);
+        }
+        for (int i = 0; i < 30; i++) {
+            Leafeon leafeon = new Leafeon();
+            deck2.add(leafeon);
         }
 
         Player playerA = new Player(deck1);
@@ -68,7 +76,7 @@ public abstract class PlayerInput {
 
         System.out.println("----- GAME MENU -----");
         System.out.println("1 - Play Card from Hand");
-        System.out.print("Your hand: [ ");
+        System.out.print("[");
         for (PkmnCard card : activePlayer.getHand()) {
             System.out.print(card.toString() + ", ");
         }
@@ -124,25 +132,39 @@ public abstract class PlayerInput {
     //lets player choose a card out of their hand and acts according to card type
     public static void printHandMenu() {
         System.out.println("----- YOUR HAND -----");
-        printHand();
+        int i = 1;
+        for (PkmnCard card : activePlayer.getHand()) {
+            System.out.println(i + " - " + card.toString());
+            i++;
+        }
+
+        System.out.println(i + " - Back");
 
         int choice = PlayerInput.getInput();
-        String type = activePlayer.getHand().get(choice).getClass().getSuperclass().getSimpleName();
 
-        switch (type) {
-            case "Pokemon" :
-                //cast this argument as specific subclass bc its coming from an arrayList
-                printPlayPKMNMenu((Pokemon) activePlayer.getHand().get(choice));
-                break;
-            case "Trainer" :
-                printPlayTrainerMenu((Trainer) activePlayer.getHand().get(choice));
-                break;
-            case "Energy" :
-                printEnergyMenu((Energy) activePlayer.getHand().get(choice));
-                break;
-            default:
-                throw new RuntimeException("how did you get here?");
+
+        try {
+            String type = activePlayer.getHand().get(choice-1).getClass().getSuperclass().getSimpleName();
+
+            switch (type) {
+                case "Pokemon" :
+                    //cast this argument as specific subclass bc its coming from an arrayList
+                    printPlayPKMNMenu((Pokemon) activePlayer.getHand().get(choice-1));
+                    break;
+                case "Trainer" :
+                    printPlayTrainerMenu((Trainer) activePlayer.getHand().get(choice-1));
+                    break;
+                case "Energy" :
+                    printEnergyMenu((Energy) activePlayer.getHand().get(choice-1));
+                    break;
+                default:
+                    throw new RuntimeException("how did you get here?");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(String.format(ERROR_NUM, choice));
+            printHandMenu();
         }
+
     }
 
 
@@ -169,16 +191,9 @@ public abstract class PlayerInput {
     public static void printPlayTrainerMenu(Trainer trainer) {
         throw new RuntimeException(ERROR_CUTE);
     }
-    
-    public static void printHand() {
-        int i = 1;
-        for (PkmnCard card : activePlayer.getHand()) {
-            System.out.println(i + " - " + card.toString());
-            i++;
-        }
-    }
 
     //prints both players active pkmn HP and benched pkmn w/ HP
+    //please make this print the pkmns energy
     public static void printGameState() {
 
         System.out.println("----- YOUR PKMN -----");
@@ -187,7 +202,7 @@ public abstract class PlayerInput {
             System.out.println("Active PKMN: None");
         } else {
             System.out.println("Active PKMN: ");
-            System.out.println(activePlayer.getActive().toString() + " HP: " + activePlayer.getActive().getHp());
+            System.out.println(activePlayer.getActive().toString() + " HP: " + activePlayer.getActive().getHp() + " " + activePlayer.getActive().resToString());
         }
 
         System.out.println("Benched PKMN: ");
@@ -196,7 +211,7 @@ public abstract class PlayerInput {
             System.out.println("None");
         } else {
             for (Pokemon pkmn : activePlayer.getBench()) {
-                System.out.println(pkmn + " HP: " + pkmn.getHp());
+                System.out.println(pkmn + " HP: " + pkmn.getHp() + " " + pkmn.resToString());
             }
         }
         System.out.println("----- OPPONENTS PKMN -----");
@@ -236,28 +251,24 @@ public abstract class PlayerInput {
             System.out.println("Please select a Pokemon to attach energy to: ");
             int i = 1;
             for (Pokemon pkmn : choices) {
-                System.out.print(i + " - " + pkmn.toString());
+                System.out.println(i + " - " + pkmn.toString());
                 i++;
             }
 
             int choice = PlayerInput.getInput();
             //check if choice is OOB
             try {
-                choices.get(choice);
+                activePlayer.attachEnergy(choices.get(choice-1), energy);
+                gameTurn(activePlayer, inactivePlayer);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Not valid option. Must be a number listed on screen");
             }
-
-            activePlayer.attachEnergy(choices.get(choice), energy);
-            gameTurn(activePlayer, inactivePlayer);
         }
     }
 
-    //TO DO:
-    //should take active pkmn and send it to bench using energy attached to pkmn
-    //then player chooses new active pokemon from bench
+    //play picks pokemon card from bench to replace active pokemon
     public static void printRetreatMenu() {
-        System.out.println("Would you like to retreat?" + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().retreatCost);
+        System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + " retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
         System.out.println("1 - Yes");
         System.out.println("2 - No");
 
@@ -269,6 +280,9 @@ public abstract class PlayerInput {
                     System.out.println("Not enough energy. " + activePlayer.getActive().toString() + "'s has " + activePlayer.getActive().getEnergyRes().size() + " energy attached.");
                     gameTurn(activePlayer, inactivePlayer);
                 } else {
+                    // TO DO:
+                    //player needs to choose pokemon to be swapped from bench
+                    //needs to check bench isnt empty first
                     for (int i = 0; i < activePlayer.getActive().retreatCost; i++) {
                         activePlayer.getActive().getEnergyRes().removeFirst();
                     }
@@ -291,16 +305,21 @@ public abstract class PlayerInput {
 
             int i = 1;
             for (Attack move : activePlayer.getActive().getMoveSet()) {
-                System.out.println(i + " - " + move.name);
+                System.out.println(i + " - " + move.name + ": " + move.costsToString());
                 i++;
             }
+            System.out.println(i + " - Back");
 
             int choice = PlayerInput.getInput();
 
             //make sure choice is in bounds
             try {
-                if (activePlayer.getActive().getMoveSet().get(choice).costs.isMet(activePlayer.getActive())) {
-                    inactivePlayer.getActive().takeDamage(activePlayer.getActive().getMoveSet().get(choice+1).dmg);
+                //check if they chose the back button
+                if (choice == i) {
+                    gameTurn(activePlayer, inactivePlayer);
+                }
+                if (activePlayer.getActive().getMoveSet().get(choice-1).costs.isMet(activePlayer.getActive())) {
+                    inactivePlayer.getActive().takeDamage(activePlayer.getActive().getMoveSet().get(choice-1).dmg);
                     activePlayer.setEnergyCounter(0);
                 } else {
                     System.out.println("Not enough energy.");
@@ -326,7 +345,6 @@ public abstract class PlayerInput {
         switch (choice) {
             case 1:
                 activePlayer.setEnergyCounter(0);
-                throw new RuntimeException(ERROR_CUTE);
             case 2:
                 gameTurn(activePlayer, inactivePlayer);
                 break;
