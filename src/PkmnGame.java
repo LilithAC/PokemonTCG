@@ -4,13 +4,16 @@ import static java.util.Collections.shuffle;
 
 public class PkmnGame {
 
-    public Player player1;
-    private Player player2;
+    protected Player player1;
+    protected Player player2;
+    protected int turnCount;
+
 
     //constructs pokemon game with two players
     public PkmnGame(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        turnCount = 1;
     }
 
     public static void runGame() {

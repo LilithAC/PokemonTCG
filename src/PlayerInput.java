@@ -76,11 +76,7 @@ public abstract class PlayerInput {
 
         System.out.println("----- GAME MENU -----");
         System.out.println("1 - Play Card from Hand");
-        System.out.print("[");
-        for (PkmnCard card : activePlayer.getHand()) {
-            System.out.print(card.toString() + ", ");
-        }
-        System.out.print("]");
+        System.out.print(printHand());
         System.out.println();
         System.out.println("2 - Retreat PKMN");
         System.out.println("3 - Attack PKMN");
@@ -137,13 +133,16 @@ public abstract class PlayerInput {
             System.out.println(i + " - " + card.toString());
             i++;
         }
-
+        System.out.println("----- -----");
         System.out.println(i + " - Back");
 
         int choice = PlayerInput.getInput();
 
 
         try {
+            if (choice == i) {
+                gameTurn(activePlayer, inactivePlayer);
+            }
             String type = activePlayer.getHand().get(choice-1).getClass().getSuperclass().getSimpleName();
 
             switch (type) {
@@ -167,6 +166,14 @@ public abstract class PlayerInput {
 
     }
 
+    //formats the names of cards as strings before printing an array of them
+    public static ArrayList<String> printHand() {
+        ArrayList<String> handF = new ArrayList<>();
+        for (PkmnCard card : activePlayer.getHand()) {
+            handF.add(card.toString());
+        }
+        return handF;
+    }
 
     //takes pokemon from hand, plays it to bench, automatically puts pkmn as active if empty
     public static void printPlayPKMNMenu(Pokemon pokemon) {
@@ -189,6 +196,7 @@ public abstract class PlayerInput {
     //TO DO:
     //displays trainer card description and let player decide to play
     public static void printPlayTrainerMenu(Trainer trainer) {
+
         throw new RuntimeException(ERROR_CUTE);
     }
 
@@ -261,14 +269,15 @@ public abstract class PlayerInput {
                 activePlayer.attachEnergy(choices.get(choice-1), energy);
                 gameTurn(activePlayer, inactivePlayer);
             } catch (IndexOutOfBoundsException e) {
-                System.out.println("Not valid option. Must be a number listed on screen");
+                System.out.println(String.format(ERROR_NUM, choice));
+                printEnergyMenu(energy);
             }
         }
     }
 
     //play picks pokemon card from bench to replace active pokemon
     public static void printRetreatMenu() {
-        System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + " retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
+        System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
         System.out.println("1 - Yes");
         System.out.println("2 - No");
 
@@ -277,12 +286,32 @@ public abstract class PlayerInput {
         switch (choice) {
             case 1:
                 if (activePlayer.getActive().getEnergyRes().size() < activePlayer.getActive().retreatCost) {
-                    System.out.println("Not enough energy. " + activePlayer.getActive().toString() + "'s has " + activePlayer.getActive().getEnergyRes().size() + " energy attached.");
+                    System.out.println("Not enough energy. " + activePlayer.getActive().toString() + " has " + activePlayer.getActive().getEnergyRes().size() + " energy attached.");
                     gameTurn(activePlayer, inactivePlayer);
                 } else {
                     // TO DO:
                     //player needs to choose pokemon to be swapped from bench
-                    //needs to check bench isnt empty first
+                    if (activePlayer.getBench().isEmpty()) {
+                        System.out.println("Retreat is not possible. You have no pokemon to replace active.");
+                        gameTurn(activePlayer, inactivePlayer);
+                    } else {
+                        System.out.println("Please choose a pokemon to replace " + activePlayer.getActive());
+                        int i = 1;
+                        for (Pokemon poke : activePlayer.getBench()) {
+                            System.out.println(i + " - " + poke);
+                        }
+
+                        int choice2 = PlayerInput.getInput();
+
+                        try {
+                            activePlayer.getBench().add(activePlayer.getActive());
+                            activePlayer.setActive(activePlayer.getBench().get(choice-1));
+                            activePlayer.getBench().remove(choice-1);
+                        } catch (IndexOutOfBoundsException e) {
+
+
+                        }
+                    }
                     for (int i = 0; i < activePlayer.getActive().retreatCost; i++) {
                         activePlayer.getActive().getEnergyRes().removeFirst();
                     }
@@ -297,6 +326,12 @@ public abstract class PlayerInput {
 
     //player chooses a move to attack defending player with, their energy counter is reset and their turn ends
     public static void printAttackMenu() {
+        //players cannot attack on each others first turn
+        if (game.turnCount == 1 || game.turnCount == 2) {
+            System.out.println("You cannot attack during starting turns.");
+            gameTurn(activePlayer, inactivePlayer);
+        }
+
         if (activePlayer.getActive() == null) {
             System.out.println("You have no active Pokemon to attack with.");
             gameTurn(activePlayer, inactivePlayer);
@@ -321,6 +356,7 @@ public abstract class PlayerInput {
                 if (activePlayer.getActive().getMoveSet().get(choice-1).costs.isMet(activePlayer.getActive())) {
                     inactivePlayer.getActive().takeDamage(activePlayer.getActive().getMoveSet().get(choice-1).dmg);
                     activePlayer.setEnergyCounter(0);
+                    game.turnCount++;
                 } else {
                     System.out.println("Not enough energy.");
                     printAttackMenu();
@@ -332,9 +368,7 @@ public abstract class PlayerInput {
         }
     }
 
-    //TO DO:
-    //should ask player if they are sure they would not like to attack
-    //end players turn AND reset energy counter to 0 !!!
+    //asks player if they would like to pass turn without attacking
     public static void printPassMenu() {
         System.out.println("End your turn without attacking?");
         System.out.println("1 - Yes");
@@ -345,6 +379,8 @@ public abstract class PlayerInput {
         switch (choice) {
             case 1:
                 activePlayer.setEnergyCounter(0);
+                game.turnCount++;
+                break;
             case 2:
                 gameTurn(activePlayer, inactivePlayer);
                 break;
