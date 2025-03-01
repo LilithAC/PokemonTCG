@@ -10,6 +10,7 @@ public class Player {
     private ArrayList<PkmnCard> discard;
     private ArrayList<Pokemon> bench;
     private Pokemon active;
+    //can turn this into a boolean
     private int energyCounter;
 
     public Player(ArrayList<PkmnCard> deck) {

@@ -1,3 +1,5 @@
+import java.util.List;
+
 import static java.util.Collections.shuffle;
 
 public class PkmnGame {
@@ -5,19 +7,36 @@ public class PkmnGame {
     public Player player1;
     private Player player2;
 
-    //constructs pokemon game with two players and decides turn order
+    //constructs pokemon game with two players
     public PkmnGame(Player player1, Player player2) {
+        this.player1 = player1;
+        this.player2 = player2;
+    }
 
-        Coin coin = new Coin();
-        if (coin.flip()) {
-            this.player1 = player1;
-            this.player2 = player2;
-        } else {
-            this.player2 = player1;
-            this.player1 = player2;
+    public static void runGame() {
+        PlayerInput.printMainMenu();
+        var choice = PlayerInput.getInput();
+
+        while (!List.of(1, 2 ,3).contains(choice)) {
+            System.out.println(String.format(PlayerInput.ERROR_NUM, choice));
+
+            PlayerInput.printMainMenu();
+            choice = PlayerInput.getInput();
+        }
+
+        switch (choice) {
+            case 1 : PlayerInput.startGame();
+                break;
+            case 2 : PlayerInput.options();
+                break;
+            case 3 : PlayerInput.endGame();
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(PlayerInput.ERROR_NUM, choice));
         }
     }
 
+    //checks deck sizes, shuffles decks, and fills hands and prize piles
     public void startGame() {
         if (player1.getDeck().size() != 60) {
             throw new RuntimeException("A deck needs 60 cards exactly! Player 1 has " + player1.getDeck().size() + " cards");
@@ -33,14 +52,23 @@ public class PkmnGame {
         fillHand(player2);
         fillPrize(player1);
         fillPrize(player2);
+
+        gameLoop();
     }
 
-    public void gameLoop(){
-        while (!checkLoser(player1) || !checkLoser(player2)) {
-            takeTurn(player1);
-            checkLoser(player2);
-            takeTurn(player2);
+    //returns winner of the game
+    public Player gameLoop(){
+        while ((!checkLoser(player1) && !checkWin(player1)) && (!checkLoser(player2) && !checkWin(player2))) {
+            PlayerInput.gameTurn(player1, player2);
+            if (checkWin(player1) || checkLoser(player2)) {
+                return player1;
+            }
+            PlayerInput.gameTurn(player2, player1);
+            if (checkWin(player2) || checkLoser(player1)) {
+                return player2;
+            }
         }
+        return player1; //should never reach here
     }
 
     //sends both players hands and prize pile cards back into their deck
@@ -65,20 +93,14 @@ public class PkmnGame {
         player2.getDiscard().clear();
     }
 
-    /**needs to check if any conditions are true:
-     * player has 0 pokemon in play
-     * player's deck is empty
-    **/
+    // checks if player has 0 pokemon in play or if deck is empty
     public boolean checkLoser(Player player) {
         return player.getDeck().isEmpty() || (player.getBench().isEmpty() && player.getActive() == null);
     }
 
+    //checks if players prize pile is empty
     public boolean checkWin(Player player) {
         return player.getPrizePile().isEmpty();
-    }
-
-    public void takeTurn(Player player) {
-        drawCard(player);
     }
 
     //adds a PkmnCard to hand and remove it from deck

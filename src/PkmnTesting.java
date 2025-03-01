@@ -4,7 +4,7 @@ public class PkmnTesting {
 
     public static void main(String[] args) {
 
-        PlayerInput.runGame();
+        PkmnGame.runGame();
 
         // ===== THIRD CHECKUP =====
         //1-4 different pokemon minimum
