@@ -38,17 +38,15 @@ public abstract class PlayerInput {
         Player playerB = new Player(deck2);
 
         game = new PkmnGame(playerA, playerB);
-        activePlayer = playerA;
-        inactivePlayer = playerB;
         game.startGame();
 
         Coin coin = new Coin();
         if (coin.flip()) {
             System.out.println("The coin flipped heads. Player 1 goes first.");
-            gameTurn(activePlayer, inactivePlayer);
+            game.gameLoop(playerA, playerB);
         } else {
             System.out.println("The coin flipped tails. Player 2 goes first.");
-            gameTurn(inactivePlayer, activePlayer);
+            game.gameLoop(playerB, playerA);
         }
     }
 
@@ -123,6 +121,7 @@ public abstract class PlayerInput {
 
 
 
+    //lets player choose a card out of their hand and acts according to card type
     public static void printHandMenu() {
         System.out.println("----- YOUR HAND -----");
         printHand();
@@ -132,6 +131,7 @@ public abstract class PlayerInput {
 
         switch (type) {
             case "Pokemon" :
+                //cast this argument as specific subclass bc its coming from an arrayList
                 printPlayPKMNMenu((Pokemon) activePlayer.getHand().get(choice));
                 break;
             case "Trainer" :

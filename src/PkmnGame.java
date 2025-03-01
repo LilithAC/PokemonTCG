@@ -52,12 +52,15 @@ public class PkmnGame {
         fillHand(player2);
         fillPrize(player1);
         fillPrize(player2);
-
-        gameLoop();
     }
 
     //returns winner of the game
-    public Player gameLoop(){
+    public Player gameLoop(Player player1, Player player2) {
+
+        //first turns
+        PlayerInput.gameTurn(player1, player2);
+        PlayerInput.gameTurn(player2, player1);
+
         while ((!checkLoser(player1) && !checkWin(player1)) && (!checkLoser(player2) && !checkWin(player2))) {
             PlayerInput.gameTurn(player1, player2);
             if (checkWin(player1) || checkLoser(player2)) {
