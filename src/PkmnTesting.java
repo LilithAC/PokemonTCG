@@ -1,10 +1,17 @@
-import java.util.ArrayList;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
 
 public class PkmnTesting {
 
     public static void main(String[] args) {
 
-        PkmnGame.runGame();
+        while (true) {
+            var state = State.MAIN;
+            int choice = 1;
+            GameStateHandle.step(state, choice);
+        }
 
         // ===== THIRD CHECKUP =====
         //1-4 different pokemon minimum

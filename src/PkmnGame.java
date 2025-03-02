@@ -1,5 +1,3 @@
-import java.util.List;
-
 import static java.util.Collections.shuffle;
 
 public class PkmnGame {
@@ -8,7 +6,6 @@ public class PkmnGame {
     protected Player player2;
     protected int turnCount;
 
-
     //constructs pokemon game with two players
     public PkmnGame(Player player1, Player player2) {
         this.player1 = player1;
@@ -16,31 +13,36 @@ public class PkmnGame {
         turnCount = 1;
     }
 
-    public static void runGame() {
-        PlayerInput.printMainMenu();
-        var choice = PlayerInput.getInput();
+    //returns winner of the game
+    public Player gameLoop(Player player1, Player player2) {
 
-        while (!List.of(1, 2 ,3).contains(choice)) {
-            System.out.println(String.format(PlayerInput.ERROR_NUM, choice));
+        //first turns
+        var state = State.MAIN;
+        int choice = PlayerInput.getInput();
+        GameStateHandle.step(state, choice);
+        choice = PlayerInput.getInput();
+        GameStateHandle.step(state, choice);
 
-            PlayerInput.printMainMenu();
+        while ((!checkLoser(player1) && !checkWin(player1)) && (!checkLoser(player2) && !checkWin(player2))) {
+
             choice = PlayerInput.getInput();
+            GameStateHandle.step(state, choice);
+            if (checkWin(player1) || checkLoser(player2)) {
+                return player1;
+            }
+            choice = PlayerInput.getInput();
+            GameStateHandle.step(state, choice);
+            if (checkWin(player2) || checkLoser(player1)) {
+                return player2;
+            }
         }
-
-        switch (choice) {
-            case 1 : PlayerInput.startGame();
-                break;
-            case 2 : PlayerInput.options();
-                break;
-            case 3 : PlayerInput.endGame();
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(PlayerInput.ERROR_NUM, choice));
-        }
+        return player1; //should never reach here
     }
 
     //checks deck sizes, shuffles decks, and fills hands and prize piles
     public void startGame() {
+        System.out.println("Starting game...");
+
         if (player1.getDeck().size() != 60) {
             throw new RuntimeException("A deck needs 60 cards exactly! Player 1 has " + player1.getDeck().size() + " cards");
         }
@@ -53,28 +55,20 @@ public class PkmnGame {
 
         fillHand(player1);
         fillHand(player2);
+
+        //write mulligan code here
+
         fillPrize(player1);
         fillPrize(player2);
-    }
 
-    //returns winner of the game
-    public Player gameLoop(Player player1, Player player2) {
-
-        //first turns
-        PlayerInput.gameTurn(player1, player2);
-        PlayerInput.gameTurn(player2, player1);
-
-        while ((!checkLoser(player1) && !checkWin(player1)) && (!checkLoser(player2) && !checkWin(player2))) {
-            PlayerInput.gameTurn(player1, player2);
-            if (checkWin(player1) || checkLoser(player2)) {
-                return player1;
-            }
-            PlayerInput.gameTurn(player2, player1);
-            if (checkWin(player2) || checkLoser(player1)) {
-                return player2;
-            }
+        Coin coin = new Coin();
+        if (coin.flip()) {
+            System.out.println("The coin flipped heads. Player 1 goes first.");
+            gameOver(gameLoop(player1, player2));
+        } else {
+            System.out.println("The coin flipped tails. Player 2 goes first.");
+            gameOver(gameLoop(player2, player1));
         }
-        return player1; //should never reach here
     }
 
     //sends both players hands and prize pile cards back into their deck
@@ -109,16 +103,20 @@ public class PkmnGame {
         return player.getPrizePile().isEmpty();
     }
 
-    //adds a PkmnCard to hand and remove it from deck
-    public void drawCard(Player player) {
-        player.addHand(player.getDeck().getFirst());
-        player.getDeck().removeFirst();
+    //sends all attached energy to discard pile then sends pokemon as well
+    public void knockOut(Player player) {
+        System.out.println(player.getActive().toString() + " was knocked out! Pokemon sent to discard pile.");
+
+        for (Energy energy : player.getActive().getEnergyRes()) {
+            player.getDiscard().add(energy);
+        }
+        player.getDiscard().add(player.getActive());
     }
 
     //populates hand with 7 PkmnCards
     public void fillHand(Player player) {
         for (int i = 0; i < 7; i++) {
-            drawCard(player);
+            player.drawCard();
         }
     }
 
@@ -130,8 +128,6 @@ public class PkmnGame {
         }
     }
 
-    //TO DO:
-
     private void mulligan(Player player) {
 
         player.getDeck().addAll(player.getHand());
@@ -139,11 +135,16 @@ public class PkmnGame {
 
         shuffle(player.getDeck());
 
-        for (int i = 0; i < 8; i++) {
-            drawCard(player);
+        for (int i = 0; i < 7; i++) {
+            player.drawCard();
         }
 
         System.out.println( player + " mulliganed.");
+    }
+
+    public void gameOver(Player winner) {
+        System.out.println("The game is over! " + winner + " won!");
+        stopGame();
     }
 
 }

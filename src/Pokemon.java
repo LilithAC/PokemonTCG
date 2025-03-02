@@ -8,8 +8,6 @@ abstract class Pokemon extends PkmnCard {
     protected EnergyType type;
     protected ArrayList<Energy> energyRes;
     protected ArrayList<Attack> moveSet;
-    protected AttackCost move1;
-    protected AttackCost move2;
 
     public int getHp() {
         return hp;
@@ -19,9 +17,12 @@ abstract class Pokemon extends PkmnCard {
         hp = hp - dmg;
     }
 
+    public void heal(int heal) { hp = hp + heal;}
+
     public EnergyType getType() {
         return type;
     }
+
 
     //counts how many energy cards are attached
     public int energyCheck() {
@@ -53,6 +54,9 @@ abstract class Pokemon extends PkmnCard {
             resF.add(energy.toString());
         }
 
+        if (resF.isEmpty()) {
+            resF.add("None");
+        }
         return resF;
     }
 

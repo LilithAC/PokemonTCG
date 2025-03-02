@@ -23,8 +23,8 @@ public class Player {
 
     public boolean containsPkmn() {
         int pkmn = 0;
-        for (int i = 0; i < hand.size(); i++) {
-            if(hand.get(i) instanceof Pokemon ) {
+        for (PkmnCard card : hand) {
+            if(card instanceof Pokemon ) {
                 pkmn++;
             }
         }
@@ -32,6 +32,7 @@ public class Player {
         return pkmn != 0;
     }
 
+    //attaches specified energy to specified Pkmn's energy reservoir
     public void attachEnergy(Pokemon poke, Energy energy) {
         int energyPos = hand.indexOf(energy);
         poke.getEnergyRes().add(energy);
@@ -39,16 +40,10 @@ public class Player {
         energyCounter++;
     }
 
-    public void playPkmnActive(Pokemon poke) {
-        Object o = hand.get(hand.indexOf(poke));
-        Pokemon newActive = (Pokemon) o;
-        active = newActive;
-    }
-
-    public void playPkmnBench(Pokemon poke) {
-        Object o = hand.get(hand.indexOf(poke));
-        Pokemon toBench = (Pokemon) o;
-        bench.add(toBench);
+    //adds a PkmnCard to hand and removes it from deck
+    public void drawCard() {
+        hand.add(getDeck().getFirst());
+        deck.removeFirst();
     }
 
     public ArrayList<PkmnCard> getDeck() {
@@ -57,10 +52,6 @@ public class Player {
 
     public ArrayList<PkmnCard> getHand() {
         return hand;
-    }
-
-    public void addHand(PkmnCard card) {
-        this.hand.add(card);
     }
 
     public ArrayList<PkmnCard> getPrizePile() {
@@ -87,7 +78,7 @@ public class Player {
 
     public void setEnergyCounter(int energyCounter) { this.energyCounter = energyCounter; }
 
-    //functional programming :3
+    //checks prize pile for rare candies
     public boolean checkPrize(int candies) {
 
         int count = 0;
