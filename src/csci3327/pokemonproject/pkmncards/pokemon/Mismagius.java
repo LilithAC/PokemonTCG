@@ -17,7 +17,7 @@ public class Mismagius extends Pokemon {
 
         Attack phychicRemoval = new Attack("Phychic Removal", 20, 20, 1, 1,EnergyType.PSYCHIC, "[ 1 TOTAL energy, 1 PSYCHIC energy ]");
         Attack grudge = new Attack("Grudge", 20, 50, 2, 1, EnergyType.PSYCHIC, "[ 2 TOTAL energy, 1 PSYCHIC energy ]");
-        grudge.desc = "Flip a coin. If heads this attack does 50 damage instead.";
+        grudge.setDesc("Flip a coin. If heads this attack does 50 damage instead.");
 
         moveSet.add(phychicRemoval);
         moveSet.add(grudge);

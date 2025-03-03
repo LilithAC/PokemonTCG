@@ -49,6 +49,10 @@ public class Attack {
         return desc;
     }
 
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
     public String getName() { return name;}
 
     public String getCostsName() {

@@ -17,7 +17,7 @@ public class Leafeon extends Pokemon {
 
         Attack spiralDrain = new Attack("Spiral Drain", 40, 40, 2, 1, EnergyType.GRASS, "[ 2 TOTAL energy, 1 GRASS energy ]");
         Attack magicalLeaf = new Attack("Magical Leaf", 50, 80,3,1, EnergyType.GRASS, "[ 3 TOTAL energy, 1 GRASS energy ]");
-        magicalLeaf.desc = "Flip a coin. If heads this attack deals 80 damage instead.";
+        magicalLeaf.setDesc("Flip a coin. If heads this attack deals 80 damage instead.");
 
         moveSet.add(spiralDrain);
         moveSet.add(magicalLeaf);
