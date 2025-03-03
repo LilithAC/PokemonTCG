@@ -8,8 +8,11 @@ public class AttackCost {
         this.costs = costs;
     }
 
+    //checks if attacks energy cost is met
     public boolean isMet(Pokemon pokemon) {
+
         for (EnergyCost cost : costs) {
+
             if (pokemon.energyCheck() < cost.cost && pokemon.energyCheckType(cost.type) < cost.cost) {
                 return false;
             }

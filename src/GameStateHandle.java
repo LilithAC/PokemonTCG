@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GameStateHandle {
+public class GameStateHandle {
 
-    private static Player activePlayer;
-    private static Player inactivePlayer;
+    protected static Player activePlayer;
+    protected static Player inactivePlayer;
     private static PkmnGame game;
+    private static State state = State.MAIN;
 
     public static final String ERROR_NUM = "Invalid choice: %s. Must be a number listed.";
     public static final String ERROR_CUTE = "Not implemented yet :3";
@@ -16,35 +17,36 @@ public abstract class GameStateHandle {
     **/
 
     //assumes choice is parsed int
-    public static void step(State s, int choice) {
+    public static void step(int choice) {
 
-        switch(s) {
+        switch(state) {
             case MAIN:
-                handleMain(s);
+                handleMain(choice);
                 break;
             case OPTION:
-                handleOptions(s, choice);
+                printOptions();
+                handleOptions(choice);
                 break;
             case EXIT:
-                handleExit(s, choice);
+                handleExit(choice);
                 break;
             case TURN:
-                handleTurn(activePlayer, inactivePlayer, s, choice);
+                handleTurn(choice);
                 break;
             case HAND:
-                handleHand(s, choice);
+                handleHand(choice);
                 break;
             case ATTACK:
-                handleAttack(s, choice);
+                handleAttack(choice);
                 break;
             case RETREAT:
-                handleRetreat(s, choice);
+                handleRetreat(choice);
                 break;
             case PASS:
-                handlePass(s, choice);
+                handlePass(choice);
                 break;
             case KO:
-                handleKO(s, choice);
+                handleKO(choice);
                 break;
             case WINNER:
                 handleWinner();
@@ -54,22 +56,22 @@ public abstract class GameStateHandle {
         }
     }
 
-    public static void handleMain(State s) {
-        assert s == State.MAIN;
-        printMainMenu();
-
-        int choice = PlayerInput.getInput();
+    public static void handleMain(int choice) {
+        assert state == State.MAIN;
 
         switch (choice) {
             case 1:
                 startGame();
-                s = State.TURN;
+                printGameMenu();
+                state = State.TURN;
                 break;
             case 2:
-                s = State.OPTION;
+                printOptions();
+                state = State.OPTION;
                 break;
             case 3:
-                s = State.EXIT;
+                //fix it later :D
+                state = State.EXIT;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
         }
@@ -77,13 +79,13 @@ public abstract class GameStateHandle {
 
     //TO DO:
     //make opponent configurable to be AI or human ran
-    public static void handleOptions(State s, int choice) {
+    public static void handleOptions(int choice) {
         printOptions();
         throw new RuntimeException(ERROR_CUTE);
     }
 
     //Ends the program
-    public static void handleExit(State s, int choice) {
+    public static void handleExit(int choice) {
         System.out.println("Bye.");
         if (game == null) {
             //System.exit();
@@ -94,52 +96,52 @@ public abstract class GameStateHandle {
     }
 
     //player chooses next menu to enter
-    public static void handleTurn(Player a, Player b, State s, int choice) {
-        assert s == State.TURN;
-
-        activePlayer = a;
-        inactivePlayer = b;
-
-        //first check if players active was KO'd last turn
-        if (activePlayer.getActive().getHp() <= 0) {
-            s = State.KO;
-            return;
+    public static void handleTurn(int choice) {
+        assert state == State.TURN;
+        //players only draw cards on non-starting turns
+        if(!List.of(1,2).contains(game.turnCount)) {
+            activePlayer.drawCard();
         }
-
-        printGameMenu();
 
         switch(choice) {
             case 1:
                 if (activePlayer.getHand().isEmpty()) {
                     System.out.println("You have no cards to play.");
                 } else {
-                    s = State.HAND;
-                    break;
+                    printHandMenu();
+                    state = State.HAND;
                 }
+                break;
             case 2:
                 if (activePlayer.getActive() == null) {
                     System.out.println("You have no active Pokemon to attack with.");
+                } else if (List.of(1,2).contains(game.turnCount)) {
+                    System.out.println("You cannot attack on the starting turns.");
                 } else {
-                    s = State.ATTACK;
-                    break;
+                    printAttackMenu();
+                    state = State.ATTACK;
                 }
+                break;
             case 3:
                 if (activePlayer.getActive() == null) {
                     System.out.println("You have no active Pokemon to retreat.");
                 } else {
-                    s = State.RETREAT;
-                    break;
+                    printRetreatMenu();
+                    state = State.RETREAT;
                 }
+                break;
             case 4:
                 printGameState();
+                break;
             case 5:
                 //turn count check might be redundant
                 if (List.of(1,2).contains(game.turnCount) && activePlayer.getActive() == null) {
                     System.out.println("You cannot end your turn without placing at least one Pokemon.");
                 } else {
-                    s = State.PASS;
-                    break;
+                    printPassMenu();
+                    state = State.PASS;
                 }
+                break;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
                 break;
@@ -147,29 +149,27 @@ public abstract class GameStateHandle {
     }
 
     //player chooses a card out of their hand and handles according to card type
-    public static void handleHand(State s, int choice) {
-        assert s == State.HAND;
-
-        printHandMenu();
-
-        choice = PlayerInput.getInput();
+    public static void handleHand(int choice) {
+        assert state == State.HAND;
 
         try {
-
             String type = activePlayer.getHand().get(choice-1).getClass().getSuperclass().getSimpleName();
 
             switch (type) {
                 case "Pokemon" :
                     handlePokemon((Pokemon) activePlayer.getHand().get(choice-1));
-                    s = State.TURN;
+                    printGameMenu();
+                    state = State.TURN;
                     break;
                 case "Trainer" :
                     handleTrainer((Trainer) activePlayer.getHand().get(choice-1));
-                    s = State.TURN;
+                    printGameMenu();
+                    state = State.TURN;
                     break;
                 case "Energy" :
                     handleEnergy((Energy) activePlayer.getHand().get(choice-1));
-                    s = State.TURN;
+                    printGameMenu();
+                    state = State.TURN;
                     break;
                 default:
                     System.out.println(String.format(ERROR_NUM, choice));
@@ -181,37 +181,51 @@ public abstract class GameStateHandle {
     }
 
     //player chooses a move to attack defending player with, their energy counter is reset and their turn ends
-    public static void handleAttack(State s, int choice) {
-
-        printAttackMenu();
-        choice = PlayerInput.getInput();
+    public static void handleAttack(int choice) {
 
         //make sure choice is in bounds
         try {
             //energy costs must be met to use move
             if (activePlayer.getActive().getMoveSet().get(choice-1).costs.isMet(activePlayer.getActive())) {
+
                 inactivePlayer.getActive().takeDamage(activePlayer.getActive().getMoveSet().get(choice-1).dmg);
-                //if defending pkmn gets KO'd
+
+                //check if defending pkmn gets KO'd
                 if (inactivePlayer.getActive().getHp() < 0) {
+
                     game.knockOut(inactivePlayer);
+
+                    if (game.checkLoser(inactivePlayer)) {
+                        state = State.WINNER;
+                        return;
+                    }
+                    state = State.KO;
+                    return;
                 }
+
                 //reset energy counter
                 activePlayer.setEnergyCounter(0);
+                //check if its starting turns
+                if(!List.of(1,2).contains(game.turnCount)) {
+                    inactivePlayer.drawCard();
+                }
+
+                changeTurn();
                 game.turnCount++;
+                printGameMenu();
             } else {
                 System.out.println("Not enough energy.");
-                s = State.ATTACK;
+                printGameMenu();
+                state = State.TURN;
             }
+
         } catch (IndexOutOfBoundsException e) {
             System.out.println(String.format(ERROR_NUM, choice));
         }
     }
 
     //player picks pokemon card from bench to replace active pokemon
-    public static void handleRetreat(State s, int choice) {
-        printRetreatMenu();
-
-        choice = PlayerInput.getInput();
+    public static void handleRetreat(int choice) {
 
         switch (choice) {
             case 1:
@@ -231,19 +245,23 @@ public abstract class GameStateHandle {
                         activePlayer.getBench().add(activePlayer.getActive());
                         activePlayer.setActive(activePlayer.getBench().get(choice-1));
                         activePlayer.getBench().remove(choice-1);
-                        s = State.TURN;
+
+                        //removes energy from reservoir
+                        for (int j = 0; j < activePlayer.getActive().retreatCost; j++) {
+                            activePlayer.getActive().getEnergyRes().removeFirst();
+                        }
+
+                        System.out.println(activePlayer.getActive().toString() + "is now your active Pokemon.");
+
+                        state = State.TURN;
                     } catch (IndexOutOfBoundsException e) {
                         System.out.println(String.format(ERROR_NUM, choice));
-                    }
-
-                    //removes energy from reservoir
-                    for (int j = 0; j < activePlayer.getActive().retreatCost; j++) {
-                        activePlayer.getActive().getEnergyRes().removeFirst();
                     }
                 }
                 break;
             case 2:
-                s = State.TURN;
+                printGameMenu();
+                state = State.TURN;
                 break;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
@@ -251,17 +269,25 @@ public abstract class GameStateHandle {
         }
     }
 
-    //asks player if they would like to pass turn without attacking
-    public static void handlePass(State s, int choice) {
-        printPassMenu();
-
-        choice = PlayerInput.getInput();
+    //asks player if they would like to pass turn without attacking and resets their energy counter to 0
+    public static void handlePass(int choice) {
 
         switch (choice) {
             case 1:
+                activePlayer.setEnergyCounter(0);
+                //check if its starting turns
+                if(!List.of(1,2).contains(game.turnCount)) {
+                    inactivePlayer.drawCard();
+                }
+                changeTurn();
+                game.turnCount++;
+                printGameMenu();
+
+                state = State.TURN;
                 break;
             case 2:
-                s = State.TURN;
+                printGameMenu();
+                state = State.TURN;
                 break;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
@@ -321,7 +347,7 @@ public abstract class GameStateHandle {
 
         switch (choice) {
             case 1:
-                trainer.ability(activePlayer);
+                trainer.ability(activePlayer, inactivePlayer);
                 break;
             case 2:
                 break;
@@ -331,28 +357,27 @@ public abstract class GameStateHandle {
         }
     }
 
-    public static void handleKO(State s, int choice) {
-        System.out.println("Please choose a new Pokemon to be your active!");
-
-        int i = 1;
-        for (Pokemon pokemon : activePlayer.getBench()) {
-            System.out.println(i + " - " + pokemon.toString());
-            i++;
-        }
-
-        choice = PlayerInput.getInput();
-
+    //inactive player chooses a new active pkmn before turn change
+    public static void handleKO(int choice) {
         try {
-            activePlayer.setActive(activePlayer.getBench().get(choice-1));
+            inactivePlayer.setActive(inactivePlayer.getBench().get(choice-1));
             System.out.println(activePlayer.getActive().toString() + " set as active Pokemon.");
-            s = State.TURN;
+            changeTurn();
+            state = State.TURN;
         } catch (IndexOutOfBoundsException e) {
             System.out.println(String.format(ERROR_NUM, choice));
         }
     }
 
+    //TO DO:
     public static void handleWinner() {
         //should exit program
+    }
+
+    public static void changeTurn() {
+        Player a = activePlayer;
+        activePlayer = inactivePlayer;
+        inactivePlayer = a;
     }
 
     public static void startGame() {
@@ -418,6 +443,7 @@ public abstract class GameStateHandle {
     }
 
     public static void printTrainerMenu(Trainer trainer) {
+        System.out.println();
         System.out.println("----- " + trainer.toString() + " -----");
         System.out.println();
         System.out.println(trainer.desc);
@@ -433,20 +459,36 @@ public abstract class GameStateHandle {
         int i = 1;
         for (Attack move : activePlayer.getActive().getMoveSet()) {
             System.out.println(i + " - " + move.name + ": " + move.costsToString());
+            System.out.println(move.desc);
             i++;
         }
     }
 
     public static void printRetreatMenu() {
-        System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
-        System.out.println("1 - Yes");
-        System.out.println("2 - No");
+        if(activePlayer.getActive() == null) {
+            System.out.println("You have no Pokemon to retreat.");
+            state = State.TURN;
+        } else {
+            System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
+            System.out.println("1 - Yes");
+            System.out.println("2 - No");
+        }
     }
 
     public static void printPassMenu() {
         System.out.println("End your turn without attacking?");
         System.out.println("1 - Yes");
         System.out.println("2 - No");
+    }
+
+    public static void printKOMenu() {
+        System.out.println("Please choose a new Pokemon to be your active!");
+
+        int i = 1;
+        for (Pokemon pokemon : inactivePlayer.getBench()) {
+            System.out.println(i + " - " + pokemon.toString());
+            i++;
+        }
     }
 
     //formats the names of cards as strings before printing an array of them
@@ -485,7 +527,7 @@ public abstract class GameStateHandle {
             System.out.println("Active PKMN: None");
         } else {
             System.out.println("Active PKMN: ");
-            System.out.println(inactivePlayer.getActive().toString() + " HP: " + inactivePlayer.getActive().getHp());
+            System.out.println(inactivePlayer.getActive().toString() + " HP: " + inactivePlayer.getActive().getHp() + " " + activePlayer.getActive().resToString());
         }
 
         System.out.println("Benched PKMN: ");
@@ -493,7 +535,7 @@ public abstract class GameStateHandle {
             System.out.println("None");
         } else {
             for (Pokemon pkmn : inactivePlayer.getBench()) {
-                System.out.println(pkmn + " HP: " + pkmn.getHp());
+                System.out.println(pkmn + " HP: " + pkmn.getHp() + " " + pkmn.resToString());
             }
         }
     }

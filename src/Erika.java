@@ -1,11 +1,10 @@
 public class Erika extends Trainer {
 
     public Erika() {
-        desc = "Heal 50 damage from 1 of your Pokemon.";
+        desc = "Heal 50 damage from your active Pokemon.";
     }
 
-    //player needs to choose pokemon to heal
     public void ability(Player user) {
-
+        user.getActive().heal(50);
     }
 }

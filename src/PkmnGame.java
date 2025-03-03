@@ -13,32 +13,6 @@ public class PkmnGame {
         turnCount = 1;
     }
 
-    //returns winner of the game
-    public Player gameLoop(Player player1, Player player2) {
-
-        //first turns
-        var state = State.MAIN;
-        int choice = PlayerInput.getInput();
-        GameStateHandle.step(state, choice);
-        choice = PlayerInput.getInput();
-        GameStateHandle.step(state, choice);
-
-        while ((!checkLoser(player1) && !checkWin(player1)) && (!checkLoser(player2) && !checkWin(player2))) {
-
-            choice = PlayerInput.getInput();
-            GameStateHandle.step(state, choice);
-            if (checkWin(player1) || checkLoser(player2)) {
-                return player1;
-            }
-            choice = PlayerInput.getInput();
-            GameStateHandle.step(state, choice);
-            if (checkWin(player2) || checkLoser(player1)) {
-                return player2;
-            }
-        }
-        return player1; //should never reach here
-    }
-
     //checks deck sizes, shuffles decks, and fills hands and prize piles
     public void startGame() {
         System.out.println("Starting game...");
@@ -64,11 +38,14 @@ public class PkmnGame {
         Coin coin = new Coin();
         if (coin.flip()) {
             System.out.println("The coin flipped heads. Player 1 goes first.");
-            gameOver(gameLoop(player1, player2));
+            GameStateHandle.activePlayer = player1;
+            GameStateHandle.inactivePlayer = player2;
         } else {
             System.out.println("The coin flipped tails. Player 2 goes first.");
-            gameOver(gameLoop(player2, player1));
+            GameStateHandle.activePlayer = player2;
+            GameStateHandle.inactivePlayer = player1;
         }
+
     }
 
     //sends both players hands and prize pile cards back into their deck

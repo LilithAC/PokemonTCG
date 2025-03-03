@@ -1,16 +1,14 @@
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-
 
 public class PkmnTesting {
 
     public static void main(String[] args) {
 
+        GameStateHandle.printMainMenu();
+        int choice = PlayerInput.getInput();
+
         while (true) {
-            var state = State.MAIN;
-            int choice = 1;
-            GameStateHandle.step(state, choice);
+            GameStateHandle.step(choice);
+            choice = PlayerInput.getInput();
         }
 
         // ===== THIRD CHECKUP =====

@@ -3,6 +3,7 @@ public enum EnergyType {
         GRASS,
         WATER,
         ELECTRIC,
+        PSYCHIC,
         ANY
 
 }

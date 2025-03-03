@@ -2,7 +2,7 @@ abstract class Trainer extends PkmnCard {
 
     protected String desc;
 
-    public void ability(Player user) {
+    public void ability(Player user, Player defender) {
 
     }
 

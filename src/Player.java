@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import static java.util.Collections.shuffle;
-
 public class Player {
 
     private ArrayList<PkmnCard> deck;
@@ -40,10 +38,18 @@ public class Player {
         energyCounter++;
     }
 
-    //adds a PkmnCard to hand and removes it from deck
+    //adds a single PkmnCard to hand and removes it from deck
     public void drawCard() {
         hand.add(getDeck().getFirst());
         deck.removeFirst();
+    }
+
+    //adds specified amount of PkmnCards to hand
+    public void drawCard(int amount) {
+        for (int i = 0; i < amount; i++) {
+            hand.add(getDeck().getFirst());
+            deck.removeFirst();
+        }
     }
 
     public ArrayList<PkmnCard> getDeck() {

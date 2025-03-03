@@ -1,11 +1,11 @@
 public class ProfessorsResearch extends Trainer {
 
     public ProfessorsResearch() {
-
         desc = "Discard your hand and draw 7 cards.";
     }
 
-    public void ability(Player user) {
+    @Override
+    public void ability(Player user, Player defender) {
         user.getDiscard().addAll(user.getHand());
         user.getHand().clear();
         for (int i = 0; i < 7; i++) {

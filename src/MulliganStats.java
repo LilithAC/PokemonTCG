@@ -42,7 +42,7 @@ public class MulliganStats {
             Player player2 = new Player(deck2);
 
             PkmnGame test = new PkmnGame(player1, player2);
-            test.startGame();
+            //test.startGame();
             if (!test.player1.containsPkmn()) {
                 count++;
             }
@@ -94,7 +94,7 @@ public class MulliganStats {
             do {
                 PkmnGame test = new PkmnGame(player1, player2);
                 test.stopGame();
-                test.startGame();
+                //test.startGame();
             } while (!player1.containsPkmn());
 
             if (player1.checkPrize(rareCandies)) {

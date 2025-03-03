@@ -17,7 +17,9 @@ abstract class Pokemon extends PkmnCard {
         hp = hp - dmg;
     }
 
-    public void heal(int heal) { hp = hp + heal;}
+    public void heal(int heal) {
+        hp = hp + heal;
+    }
 
     public EnergyType getType() {
         return type;

@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public abstract class PlayerInput {
+public class PlayerInput {
 
     private static final Scanner in = new Scanner(System.in);
 
