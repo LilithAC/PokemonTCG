@@ -1,6 +1,9 @@
 package csci3327.pokemonproject.app;
 
+import csci3327.pokemonproject.pkmncards.PkmnCard;
 import csci3327.pokemonproject.pkmncards.energy.Energy;
+import csci3327.pokemonproject.pkmncards.pokemon.Pokemon;
+
 import static java.util.Collections.shuffle;
 
 public class PkmnGame {
@@ -9,14 +12,21 @@ public class PkmnGame {
     protected Player player2;
     protected int turnCount;
 
-    //constructs pokemon game with two players
+    /**
+     * Creates a pokemon game with 2 players and initializes turn count.
+     * @param player1 the first player initialized
+     * @param player2 the second player initialized
+     */
     public PkmnGame(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         turnCount = 1;
     }
 
-    //checks deck sizes, shuffles decks, fills hands and prize piles, and decides turn order
+    /**
+     * Checks deck sizes, shuffles decks, fills hands and prize piles,
+     * and decides turn order.
+     */
     public void startGame() {
         System.out.println("Starting game...");
 
@@ -55,7 +65,9 @@ public class PkmnGame {
         }
     }
 
-    //sends both players hands and prize pile cards back into their deck
+    /**
+     * Sends both players hands, prize piles, and discard piles back into their deck.
+     */
     public void stopGame() {
 
         player1.getDeck().addAll(player1.getHand());
@@ -77,17 +89,28 @@ public class PkmnGame {
         player2.getDiscard().clear();
     }
 
-    // checks if player has 0 pokemon in play or if deck is empty
+    /**
+     * Checks if player has 0 pokemon in play or if deck is empty.
+     * @param player player to check
+     * @return whether the player lost
+     */
     public boolean checkLoser(Player player) {
         return player.getDeck().isEmpty() || (player.getBench().isEmpty() && player.getActive()==null);
     }
 
-    //checks if players prize pile is empty
+    /**
+     * Checks if players prize pile is empty.
+     * @param player player to check
+     * @return whether the player won
+     */
     public boolean checkWin(Player player) {
         return player.getPrizePile().isEmpty();
     }
 
-    //sends all attached energy to discard pile then sends pokemon as well
+    /**
+     * Sends all active pokemon's attached energy to discard pile then sends pokemon as well.
+     * @param player player whose pokemon was KO'd
+     */
     public void knockOut(Player player) {
         System.out.println(player.getActive().toString() + " was knocked out! "+ player.getActive().toString() + " sent to discard pile.");
 
@@ -98,14 +121,20 @@ public class PkmnGame {
         player.setActive(null);
     }
 
-    //populates hand with 7 PkmnCards
+    /**
+     * Populates hand with 7 pokemon cards.
+     * @param player player whose hand is to be filled
+     */
     public void fillHand(Player player) {
         for (int i = 0; i < 7; i++) {
             player.drawCard();
         }
     }
 
-    //populates prize pile with 6 PkmnCards
+    /**
+     * Populates prize pile with 6 pokemon cards.
+     * @param player player whose prize pile is to be filled
+     */
     public void fillPrize(Player player) {
         for(int i = 0; i < 6; i++) {
             player.getPrizePile().add(player.getDeck().get(i));
@@ -113,7 +142,12 @@ public class PkmnGame {
         }
     }
 
-    //if player has no pokemon cards in hand, they shuffle it back into their deck while opponent draws card
+    /**
+     * If player has no pokemon cards in hand,
+     * they shuffle it back into their deck while opponent draws card.
+     * @param player player who mulligans
+     * @param player2 player who draws a card
+     */
     private void mulligan(Player player, Player player2) {
 
         player.getDeck().addAll(player.getHand());
@@ -130,7 +164,10 @@ public class PkmnGame {
         player2.drawCard();
     }
 
-    //prints the winner and ends the game
+    /**
+     * Prints the winner and stops the game
+     * @param winner player who one the game
+     */
     public void gameOver(Player winner) {
         System.out.println("The game is over! " + winner.getName() + " won!");
         stopGame();

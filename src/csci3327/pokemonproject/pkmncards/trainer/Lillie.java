@@ -10,8 +10,12 @@ public class Lillie extends Trainer {
 
     @Override
     public void ability(Player user, Player defender) {
-        for (int i = user.getHand().size(); i < 6; i++) {
-            user.drawCard();
+        if (user.getHand().size() >= 6 ) {
+            System.out.println("This card had no effect.");
+        } else {
+            for (int i = user.getHand().size(); i < 6; i++) {
+                user.drawCard();
+            }
         }
     }
 

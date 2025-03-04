@@ -20,12 +20,11 @@ public class GameStateHandle {
     public static final String ERROR_NUM = "Invalid choice: %s. Must be a number listed.";
     public static final String ERROR_CUTE = "Not implemented yet :3";
 
-    /**TO DO:
-     * add back buttons to game menus
-     * create java doc
-    **/
 
-    //assumes choice is a parsed int
+    /**
+     * Handles each different state the game can be in
+     * @param choice the menu int chosen by the player
+     */
     public static void step(int choice) {
 
         switch(state) {
@@ -37,7 +36,8 @@ public class GameStateHandle {
                 handleOptions(choice);
                 break;
             case EXIT:
-                handleExit(choice);
+                System.out.println("Bye.");
+                handleExit();
                 break;
             case TURN:
                 handleTurn(choice);
@@ -65,6 +65,10 @@ public class GameStateHandle {
         }
     }
 
+    /**
+     * Allows player to choose to start game, change options, or exit the program
+     * @param choice the menu int chosen by the player
+     */
     public static void handleMain(int choice) {
         assert state == State.MAIN;
 
@@ -79,8 +83,8 @@ public class GameStateHandle {
                 state = State.OPTION;
                 break;
             case 3:
-                //fix it later :D
                 state = State.EXIT;
+                break;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
         }
@@ -93,18 +97,23 @@ public class GameStateHandle {
         throw new RuntimeException(ERROR_CUTE);
     }
 
-    //Ends the program
-    public static void handleExit(int choice) {
-        System.out.println("Bye.");
+    /**
+     * Ends the program
+     */
+    public static void handleExit() {
         if (game == null) {
-            //System.exit();
+            System.exit(0);
         } else {
             game.stopGame();
-            //System.exit();
+            System.exit(0);
         }
     }
 
-    //player chooses next menu to enter
+    /**
+     * Allows player to either play a card from their hand, attack the inactive player's
+     * active pokemon, retreat their active pokemon, or pass their turn without attacking
+     * @param choice the menu int chosen by the player
+     */
     public static void handleTurn(int choice) {
         assert state == State.TURN;
 
@@ -153,9 +162,20 @@ public class GameStateHandle {
         }
     }
 
-    //player chooses a card out of their hand and handles according to card type
+    /**
+     * Allows player to choose a card out of their hand
+     * and handles according to card type
+     * @param choice the menu int chosen by the player
+     */
     public static void handleHand(int choice) {
         assert state == State.HAND;
+
+        //check if player chose the back button
+        if (choice == activePlayer.getHand().size()+1) {
+            printGameMenu();
+            state = State.TURN;
+            return;
+        }
 
         try {
             String type = activePlayer.getHand().get(choice-1).getClass().getSuperclass().getSimpleName();
@@ -167,7 +187,10 @@ public class GameStateHandle {
                     state = State.TURN;
                     break;
                 case "Trainer" :
-                    handleTrainer((Trainer) activePlayer.getHand().get(choice-1));
+                    if (handleTrainer((Trainer) activePlayer.getHand().get(choice-1))) {
+                        activePlayer.getDiscard().add(activePlayer.getHand().get(choice-1));
+                        activePlayer.getHand().remove(choice-1);
+                    }
                     printGameMenu();
                     state = State.TURN;
                     break;
@@ -185,8 +208,19 @@ public class GameStateHandle {
         }
     }
 
-    //player chooses a move to attack defending player with, their energy counter is reset and their turn ends
+    /**
+     * Allows player to choose a move to attack defending player with
+     * their energy counter is reset and their turn ends.
+     * @param choice the menu int chosen by the player
+     */
     public static void handleAttack(int choice) {
+
+        //check if player chose back button
+        if (choice == activePlayer.getActive().getMoveSet().size()+1) {
+            printGameMenu();
+            state = State.TURN;
+            return;
+        }
 
         //make sure choice is in bounds
         try {
@@ -246,7 +280,10 @@ public class GameStateHandle {
         }
     }
 
-    //player picks pokemon card from bench to replace active pokemon
+    /**
+     * Allows player to pick a pokemon card from bench to replace active pokemon
+     * @param choice the menu int chosen by the player
+     */
     public static void handleRetreat(int choice) {
 
         switch (choice) {
@@ -254,6 +291,8 @@ public class GameStateHandle {
                 //check if retreat cost is met
                 if (activePlayer.getActive().getEnergyRes().size() < activePlayer.getActive().getRetreatCost()) {
                     System.out.println("Not enough energy. " + activePlayer.getActive().toString() + " has " + activePlayer.getActive().getEnergyRes().size() + " energy attached.");
+                    printGameMenu();
+                    state = State.TURN;
                 } else {
                     //player chooses pkmn to replace the active one
                     System.out.println("Please choose a pokemon to replace " + activePlayer.getActive());
@@ -275,6 +314,7 @@ public class GameStateHandle {
 
                         System.out.println(activePlayer.getActive().toString() + "is now your active Pokemon.");
 
+                        printGameMenu();
                         state = State.TURN;
                     } catch (IndexOutOfBoundsException e) {
                         System.out.println(String.format(ERROR_NUM, choice));
@@ -291,7 +331,11 @@ public class GameStateHandle {
         }
     }
 
-    //asks player if they would like to pass turn without attacking and resets their energy counter to 0
+    /**
+     * asks player if they would like to pass turn without attacking
+     * then resets their energy counter to 0 if yes.
+     * @param choice the menu int chosen by the player
+     */
     public static void handlePass(int choice) {
 
         switch (choice) {
@@ -317,7 +361,11 @@ public class GameStateHandle {
         }
     }
 
-    //takes pokemon from hand, plays it to bench, automatically puts pkmn as active if empty
+    /**
+     * takes pokemon from hand, plays it to bench
+     * automatically puts pokemon as active if empty
+     * @param pokemon the pokemon to be put in play
+     */
     public static void handlePokemon(Pokemon pokemon) {
         if (activePlayer.getActive() == null) {
             System.out.println("First Pokemon goes to active slot.");
@@ -332,7 +380,10 @@ public class GameStateHandle {
         }
     }
 
-    //player picks pokemon to attach energy to
+    /**
+     * Allows player to pick pokemon to attach energy to.
+     * @param energy the energy to be attached to a pokemon
+     */
     public static void handleEnergy(Energy energy) {
 
         if (activePlayer.getEnergyCounter() > 0) {
@@ -361,8 +412,12 @@ public class GameStateHandle {
         }
     }
 
-    //displays trainer card description and let player decide whether to play
-    public static void handleTrainer(Trainer trainer) {
+    /**
+     * Displays trainer card description and let player decide whether to play.
+     * @param trainer the trainer to be used
+     * @return whether the card was used
+     */
+    public static boolean handleTrainer(Trainer trainer) {
         printTrainerMenu(trainer);
 
         int choice = PlayerInput.getInput();
@@ -370,19 +425,24 @@ public class GameStateHandle {
         switch (choice) {
             case 1:
                 trainer.ability(activePlayer, inactivePlayer);
-                break;
+                return true;
             case 2:
-                break;
+                return false;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
-                break;
+                return false;
+
         }
     }
 
-    //inactive player chooses a new active pkmn before turn change
+    /**
+     * inactive player chooses a new active pokemon before turn change.
+     * @param choice the menu int chosen by the player
+     */
     public static void handleKO(int choice) {
         try {
             inactivePlayer.setActive(inactivePlayer.getBench().get(choice-1));
+            inactivePlayer.getBench().remove(choice-1);
             System.out.println(inactivePlayer.getActive().toString() + " set as active Pokemon.");
             activePlayer.setEnergyCounter(0);
             changeTurn();
@@ -393,19 +453,26 @@ public class GameStateHandle {
         }
     }
 
-    //TO DO:
-    //prints the winner and exits the game
+    /**
+     * Prints the winning player and stops the game in progress.
+     */
     public static void handleWinner() {
         game.gameOver(activePlayer);
-        //should exit program
     }
 
+    /**
+     * Switches the active and inactive player for turn changes.
+     */
     public static void changeTurn() {
         Player a = activePlayer;
         activePlayer = inactivePlayer;
         inactivePlayer = a;
     }
 
+    /**
+     * Creates 2 decks and fills them cards, assigns them to 2 players,
+     * then initializes new game with the 2 players.
+     */
     public static void startGame() {
 
         ArrayList<PkmnCard> deck1 = new ArrayList<>();
@@ -420,6 +487,9 @@ public class GameStateHandle {
         game.startGame();
     }
 
+    /**
+     * Prints the main menu.
+     */
     public static void printMainMenu() {
         System.out.println("----- MAIN MENU -----");
         System.out.println("1 - Play Game");
@@ -427,10 +497,16 @@ public class GameStateHandle {
         System.out.println("3 - End Game");
     }
 
+    /**
+     * Prints the options menu
+     */
     public static void printOptions() {
         System.out.println("----- OPTIONS -----");
     }
 
+    /**
+     * Prints the game menu for a single turn.
+     */
     public static void printGameMenu() {
         System.out.println("----- GAME MENU -----");
         System.out.println("1 - Play Card from Hand");
@@ -442,6 +518,9 @@ public class GameStateHandle {
         System.out.println("5 - Pass");
     }
 
+    /**
+     * Prints the active players hand.
+     */
     public static void printHandMenu() {
         System.out.println("----- YOUR HAND -----");
         int i = 1;
@@ -449,8 +528,14 @@ public class GameStateHandle {
             System.out.println(i + " - " + card.toString());
             i++;
         }
+        System.out.println("----- -----");
+        System.out.println(i + " - Back");
     }
 
+    /**
+     * Prints the trainer menu with card name and description.
+     * @param trainer the trainer card to be displayed
+     */
     public static void printTrainerMenu(Trainer trainer) {
         System.out.println();
         System.out.println("----- " + trainer.toString() + " -----");
@@ -462,6 +547,9 @@ public class GameStateHandle {
         System.out.println("2 - No");
     }
 
+    /**
+     * Prints the attack menu with active players active pokemon as moves
+     */
     public static void printAttackMenu(){
         System.out.println("Please choose an attack: ");
         System.out.println("----- MOVES -----");
@@ -471,8 +559,14 @@ public class GameStateHandle {
             System.out.println(move.getDesc());
             i++;
         }
+        System.out.println();
+        System.out.println(i + " - Back");
     }
 
+    /**
+     * Prints the retreat menu with the active players active pokemon's
+     * retreat cost
+     */
     public static void printRetreatMenu() {
         if(activePlayer.getActive() == null) {
             System.out.println("You have no Pokemon to retreat.");
@@ -484,12 +578,18 @@ public class GameStateHandle {
         }
     }
 
+    /**
+     * Prints the pass menu
+     */
     public static void printPassMenu() {
         System.out.println("End your turn without attacking?");
         System.out.println("1 - Yes");
         System.out.println("2 - No");
     }
 
+    /**
+     * Prints the KO menu showing inactive players pokemon that got knocked out
+     */
     public static void printKOMenu() {
         System.out.println("Please choose a new Pokemon to be your active!");
 
@@ -500,7 +600,10 @@ public class GameStateHandle {
         }
     }
 
-    //formats the names of cards as strings before printing an array of them
+    /**
+     * Formats the names of cards as strings
+     * @return ArrayList of formatted pokemon card names
+     */
     public static ArrayList<String> printHand() {
         ArrayList<String> handF = new ArrayList<>();
         for (PkmnCard card : activePlayer.getHand()) {
@@ -509,7 +612,10 @@ public class GameStateHandle {
         return handF;
     }
 
-    //prints both players active pkmn HP and benched pkmn w/ HP and energyRes
+    /**
+     * prints both players active pokemon's
+     * and benched pokemon's HP and energyRes
+     */
     public static void printGameState() {
 
         System.out.println("----- YOUR PKMN -----");
@@ -549,6 +655,10 @@ public class GameStateHandle {
         }
     }
 
+    /**
+     * Fills deck with deck1 load out
+     * @param deck player deck with 60 cards
+     */
     public static void fillDeck1(ArrayList<PkmnCard> deck) {
         //20 pokemon
         for (int i = 0; i < 10; i++) {
@@ -582,6 +692,10 @@ public class GameStateHandle {
 
     }
 
+    /**
+     * Fills deck with deck2 load out
+     * @param deck player deck with 60 cards
+     */
     public static void fillDeck2(ArrayList<PkmnCard> deck) {
 
         //20 pokemon
@@ -612,16 +726,11 @@ public class GameStateHandle {
 
     }
 
+    /**
+     * Fetches GameStateHandles current state
+     * @return the current state of GameStateHandle
+     */
     public static State getState() {
         return state;
-    }
-
-    //FOR TESTING:
-    public static void cheatDeck1(ArrayList<PkmnCard> deck) {
-
-    }
-
-    public static void cheatDeck2(ArrayList<PkmnCard> deck) {
-
     }
 }

@@ -1,5 +1,6 @@
 package csci3327.pokemonproject.pkmncards.trainer;
 
+import csci3327.pokemonproject.app.GameStateHandle;
 import csci3327.pokemonproject.app.Player;
 
 public class Potion extends Trainer {
@@ -10,7 +11,11 @@ public class Potion extends Trainer {
 
     @Override
     public void ability(Player user, Player defender) {
-        user.getActive().heal(50);
+        if (user.getActive() == null) {
+            System.out.println("You have no active pokemon to heal");
+        } else {
+            user.getActive().heal(50);
+        }
     }
 
     @Override

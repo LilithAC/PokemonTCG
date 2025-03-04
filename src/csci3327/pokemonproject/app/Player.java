@@ -19,6 +19,11 @@ public class Player {
     //can turn this into a boolean
     private int energyCounter;
 
+    /**
+     * Initializes a new player with a name and deck of cards.
+     * @param deck deck to be attached to player
+     * @param name formatted name of the player
+     */
     public Player(ArrayList<PkmnCard> deck, String name) {
         this.name = name;
         this.deck = deck;
@@ -28,6 +33,10 @@ public class Player {
         bench = new ArrayList<>();
     }
 
+    /**
+     * Checks if the player's hand contains and pokemon monster cards.
+     * @return whether the players hand contains 0 pokemon
+     */
     public boolean containsPkmn() {
         int pkmn = 0;
         for (PkmnCard card : hand) {
@@ -39,7 +48,11 @@ public class Player {
         return pkmn != 0;
     }
 
-    //attaches specified energy to specified Pkmn's energy reservoir
+    /**
+     * Attaches specified energy to specified pokemon's energy reservoir.
+     * @param poke pokemon to have energy attached
+     * @param energy energy card to be attached
+     */
     public void attachEnergy(Pokemon poke, Energy energy) {
         int energyPos = hand.indexOf(energy);
         poke.getEnergyRes().add(energy);
@@ -47,13 +60,18 @@ public class Player {
         energyCounter++;
     }
 
-    //adds a single PkmnCard to hand and removes it from deck
+    /**
+     * Adds a single pokemon card to players hand and removes it from deck.
+     */
     public void drawCard() {
         hand.add(getDeck().getFirst());
         deck.removeFirst();
     }
 
-    //adds specified amount of PkmnCards to hand
+    /**
+     * adds specified amount of pokemon cards to players hand and removes it from deck.
+     * @param amount number of cards to be drawn
+     */
     public void drawCard(int amount) {
         for (int i = 0; i < amount; i++) {
             hand.add(getDeck().getFirst());
@@ -61,10 +79,28 @@ public class Player {
         }
     }
 
-    //takes a single card from prize pile and adds it to hand
+    /**
+     * Takes a single card from prize pile and adds it to hand.
+     */
     public void removePrize() {
         hand.add(getPrizePile().getFirst());
         prizePile.removeFirst();
+    }
+
+    /**
+     * Checks prize pile for rare candies
+     * @param candies amount of candies in the deck
+     * @return whether all the candies are in the players prize pile
+     */
+    public boolean checkPrize(int candies) {
+
+        int count = 0;
+        for (PkmnCard card : prizePile) {
+            if (card instanceof RareCandy) {
+                count++;
+            }
+        }
+        return count == candies;
     }
 
     public ArrayList<PkmnCard> getDeck() {
@@ -102,17 +138,5 @@ public class Player {
     public int getEnergyCounter() { return energyCounter; }
 
     public void setEnergyCounter(int energyCounter) { this.energyCounter = energyCounter; }
-
-    //checks prize pile for rare candies
-    public boolean checkPrize(int candies) {
-
-        int count = 0;
-        for (PkmnCard card : prizePile) {
-            if (card instanceof RareCandy) {
-                count++;
-            }
-        }
-        return count == candies;
-    }
 
 }

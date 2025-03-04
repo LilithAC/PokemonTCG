@@ -11,14 +11,27 @@ public class MulliganStats {
 
     public static void main(String[] args) {
 
+        //runs experiment from 1 to 4 rare candies in deck
         for (int i = 1; i < 5; i++) {
             System.out.printf("%.2f", rareCandyStats(i));
             System.out.print("% chance of bricked");
             System.out.println();
         }
+
+        //runs experiment from 1 to 60 pokemon in deck
+        for (int i = 1; i < 61; i++) {
+            System.out.printf("%.2f", mulliganStats(i));
+            System.out.print("% chance of a mulligan");
+            System.out.println();
+        }
     }
 
-    //parameter pokemon is how many pokemon compared to energy in deck
+    /**
+     * Runs a Monte Carlo simulation 10000 times to see the likelihood
+     * of a player having to mulligan on their first turn.
+     * @param pokemon amount of pokemon in deck
+     * @return the likelihood of player having to mulligan
+     */
     public static double mulliganStats(int pokemon) {
         WaterEnergy waterEnergy = new WaterEnergy();
         Pikachu pikachu = new Pikachu();
@@ -57,6 +70,12 @@ public class MulliganStats {
         return (count / 10000) * 100;
     }
 
+    /**
+     * Runs a Monte Carlo simulation 10000 times to see the likelihood
+     * of all rare candies being in the prize pile.
+     * @param rareCandies amount of rare candies in the deck
+     * @return the likelihood of rare candies being in the prize pile
+     */
     public static double rareCandyStats(int rareCandies) {
 
         WaterEnergy waterEnergy = new WaterEnergy();
@@ -96,7 +115,7 @@ public class MulliganStats {
             do {
                 PkmnGame test = new PkmnGame(player1, player2);
                 test.stopGame();
-                //test.startGame();
+                test.startGame();
             } while (!player1.containsPkmn());
 
             if (player1.checkPrize(rareCandies)) {
