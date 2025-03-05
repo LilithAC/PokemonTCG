@@ -6,7 +6,6 @@ public class PkmnTesting {
 
         GameStateHandle.printMainMenu();
         int choice = PlayerInput.getInput();
-
         while (true) {
             GameStateHandle.step(choice);
             if (GameStateHandle.getState() == State.WINNER || GameStateHandle.getState() == State.EXIT) {
@@ -15,8 +14,5 @@ public class PkmnTesting {
             choice = PlayerInput.getInput();
         }
         System.exit(0);
-
-        //you should be able to play against yourself OR an ai that does everything it can do and ends turn
-        //make javaDoc, label extra features
     }
 }

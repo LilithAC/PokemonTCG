@@ -10,29 +10,36 @@ import java.util.ArrayList;
 public abstract class Pokemon extends PkmnCard {
 
     protected int hp;
-    public int retreatCost;
+    protected int maxHp = hp;
+    protected int retreatCost;
     protected EnergyType type;
     protected ArrayList<Energy> energyRes;
     protected ArrayList<Attack> moveSet;
 
-    public int getHp() {
-        return hp;
-    }
-
+    /**
+     * Pokemon takes specified damage amount.
+     * @param dmg amount damaged
+     */
     public void takeDamage(int dmg) {
         hp = hp - dmg;
     }
 
+    /**
+     * Pokemon heals for specified amount. If the healing
+     * would bring it over its maximum HP, it will only heal to the maximum
+     * @param heal amount healed
+     */
     public void heal(int heal) {
         hp = hp + heal;
+        if (hp > maxHp) {
+            hp = maxHp;
+        }
     }
 
-    public EnergyType getType() {
-        return type;
-    }
-
-
-    //counts how many energy cards are attached
+    /**
+     * Counts how many energy cards are attached to a pokemon
+     * @return total amount of energy attached
+     */
     public int energyCheck() {
         int count = 0;
         for (Energy card : energyRes) {
@@ -41,7 +48,12 @@ public abstract class Pokemon extends PkmnCard {
         return count;
     }
 
-    //counts how many energy cards of a specified type are attached
+    /**
+     * Counts how many energy cards of a specified type are attached
+     * to a pokemon
+     * @param type Energy type to be searched for
+     * @return amount of specified energy attached
+     */
     public int energyCheckType(EnergyType type) {
         int count = 0;
         for (Energy card : energyRes) {
@@ -52,10 +64,10 @@ public abstract class Pokemon extends PkmnCard {
         return count;
     }
 
-    public ArrayList<Energy> getEnergyRes() {
-        return energyRes;
-    }
-
+    /**
+     * Formats the pokemon's energy reservoir
+     * @return Arraylist of pokemon's energy reservoir
+     */
     public ArrayList<String> resToString() {
         ArrayList<String> resF = new ArrayList<>();
         for (Energy energy : energyRes) {
@@ -68,9 +80,23 @@ public abstract class Pokemon extends PkmnCard {
         return resF;
     }
 
+
+    public ArrayList<Energy> getEnergyRes() {
+        return energyRes;
+    }
+
+    public EnergyType getType() {
+        return type;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
     public ArrayList<Attack> getMoveSet() { return moveSet;}
 
     public int getRetreatCost() {
         return retreatCost;
     }
+
 }

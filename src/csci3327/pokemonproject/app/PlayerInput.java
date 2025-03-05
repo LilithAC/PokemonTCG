@@ -5,10 +5,12 @@ import java.util.Scanner;
 public class PlayerInput {
 
     private static final Scanner in = new Scanner(System.in);
-
     public static final String ERROR_FRMT = "Invalid choice: %s. Must be a number.";
 
-    //checks if player input was an integer
+    /**
+     * Takes input from the console and repeats until given an integer
+     * @return integer input
+     */
     public static int getInput() {
         int choice;
         String next = PlayerInput.in.next();

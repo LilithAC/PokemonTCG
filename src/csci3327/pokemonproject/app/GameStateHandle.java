@@ -139,6 +139,8 @@ public class GameStateHandle {
             case 3:
                 if (activePlayer.getActive() == null) {
                     System.out.println("You have no active Pokemon to retreat.");
+                } else if (activePlayer.getBench().isEmpty()) {
+                    System.out.println("You have no Pokemon to retreat with.");
                 } else {
                     printRetreatMenu();
                     state = State.RETREAT;
@@ -308,7 +310,7 @@ public class GameStateHandle {
                         activePlayer.getBench().remove(choice-1);
 
                         //removes energy from reservoir
-                        for (int j = 0; j < activePlayer.getActive().retreatCost; j++) {
+                        for (int j = 0; j < activePlayer.getActive().getRetreatCost(); j++) {
                             activePlayer.getActive().getEnergyRes().removeFirst();
                         }
 
@@ -572,7 +574,7 @@ public class GameStateHandle {
             System.out.println("You have no Pokemon to retreat.");
             state = State.TURN;
         } else {
-            System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().retreatCost + " energy.");
+            System.out.println("Would you like to retreat? " + activePlayer.getActive().toString() + "'s retreat cost is " + activePlayer.getActive().getRetreatCost() + " energy.");
             System.out.println("1 - Yes");
             System.out.println("2 - No");
         }

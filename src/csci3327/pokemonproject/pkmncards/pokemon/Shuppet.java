@@ -13,6 +13,7 @@ public class Shuppet extends Pokemon {
 
         hp = 50;
         type = EnergyType.PSYCHIC;
+        retreatCost = 1;
 
         Attack bleh = new Attack("Bleh", 10, 10,1, 1, EnergyType.PSYCHIC, "[ 1 TOTAL energy, 1 PSYCHIC energy ]");
         moveSet.add(bleh);

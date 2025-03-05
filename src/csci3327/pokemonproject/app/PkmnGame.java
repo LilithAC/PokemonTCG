@@ -1,9 +1,6 @@
 package csci3327.pokemonproject.app;
 
-import csci3327.pokemonproject.pkmncards.PkmnCard;
 import csci3327.pokemonproject.pkmncards.energy.Energy;
-import csci3327.pokemonproject.pkmncards.pokemon.Pokemon;
-
 import static java.util.Collections.shuffle;
 
 public class PkmnGame {
