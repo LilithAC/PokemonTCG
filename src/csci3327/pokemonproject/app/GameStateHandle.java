@@ -10,16 +10,29 @@ import csci3327.pokemonproject.pkmncards.trainer.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Lilith Carpenter
+ * @since 1.0
+ * This is a finite state machine built to handle all the
+ * possible states of a pokemon trading card game turn
+ */
 public class GameStateHandle {
 
+    /**
+     * Player whose turn it currently is.
+     */
     protected static Player activePlayer;
+    /**
+     * Player whose turn it was last.
+     */
     protected static Player inactivePlayer;
+    /**
+     *
+     */
     protected static PkmnGame game;
     protected static State state = State.MAIN;
 
     public static final String ERROR_NUM = "Invalid choice: %s. Must be a number listed.";
-    public static final String ERROR_CUTE = "Not implemented yet :3";
-
 
     /**
      * Handles each different state the game can be in
@@ -31,12 +44,7 @@ public class GameStateHandle {
             case MAIN:
                 handleMain(choice);
                 break;
-            case OPTION:
-                printOptions();
-                handleOptions(choice);
-                break;
             case EXIT:
-                System.out.println("Bye.");
                 handleExit();
                 break;
             case TURN:
@@ -79,22 +87,12 @@ public class GameStateHandle {
                 state = State.TURN;
                 break;
             case 2:
-                printOptions();
-                state = State.OPTION;
-                break;
-            case 3:
+                System.out.println("Bye.");
                 state = State.EXIT;
                 break;
             default:
                 System.out.println(String.format(ERROR_NUM, choice));
         }
-    }
-
-    //TO DO:
-    //make opponent configurable to be AI or human ran
-    public static void handleOptions(int choice) {
-        printOptions();
-        throw new RuntimeException(ERROR_CUTE);
     }
 
     /**
@@ -495,15 +493,7 @@ public class GameStateHandle {
     public static void printMainMenu() {
         System.out.println("----- MAIN MENU -----");
         System.out.println("1 - Play Game");
-        System.out.println("2 - Options");
-        System.out.println("3 - End Game");
-    }
-
-    /**
-     * Prints the options menu
-     */
-    public static void printOptions() {
-        System.out.println("----- OPTIONS -----");
+        System.out.println("2 - End Game");
     }
 
     /**
@@ -729,7 +719,7 @@ public class GameStateHandle {
     }
 
     /**
-     * Fetches GameStateHandles current state
+     * Fetches GameStateHandle's current state
      * @return the current state of GameStateHandle
      */
     public static State getState() {
