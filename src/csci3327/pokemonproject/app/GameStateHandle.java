@@ -26,9 +26,6 @@ public class GameStateHandle {
      * Player whose turn it was last.
      */
     protected static Player inactivePlayer;
-    /**
-     *
-     */
     protected static PkmnGame game;
     protected static State state = State.MAIN;
 
